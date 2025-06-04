@@ -1,4 +1,4 @@
-namespace AutoParts.Web.Tests;
+﻿namespace AutoParts.Web.Tests;
 
 public class Tests
 {

@@ -1,4 +1,4 @@
-namespace AutoParts.Web.Models;
+﻿namespace AutoParts.Web.Models;
 
 public class ErrorViewModel
 {

@@ -1,30 +1,32 @@
 ﻿namespace AutoParts.Web.Data;
 
-using Microsoft.EntityFrameworkCore;
 using AutoParts.Web.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : DbContext {
-  public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-  public DbSet<User> Users { get; set; }
-  public DbSet<Customer> Customers { get; set; }
-  public DbSet<Vehicle> Vehicles { get; set; }
-  public DbSet<Comment> Comments { get; set; }
-  public DbSet<Part> Parts { get; set; }
-  public DbSet<UsedPart> UsedParts { get; set; }
-  public DbSet<ServiceTask> ServiceTasks { get; set; }
-  public DbSet<ServiceOrder> ServiceOrders { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Part> Parts { get; set; }
+    public DbSet<UsedPart> UsedParts { get; set; }
+    public DbSet<ServiceTask> ServiceTasks { get; set; }
+    public DbSet<ServiceOrder> ServiceOrders { get; set; }
 
-  protected override void OnModelCreating(ModelBuilder modelBuilder) {
-    base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
-    modelBuilder.Entity<User>().ToTable("Users");
-    modelBuilder.Entity<Customer>().ToTable("Customers");
-    modelBuilder.Entity<Vehicle>().ToTable("Vehicles");
-    modelBuilder.Entity<Comment>().ToTable("Comments");
-    modelBuilder.Entity<Part>().ToTable("Parts");
-    modelBuilder.Entity<UsedPart>().ToTable("UsedParts");
-    modelBuilder.Entity<ServiceTask>().ToTable("ServiceTasks");
-    modelBuilder.Entity<ServiceOrder>().ToTable("ServiceOrders");
-  }
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Customer>().ToTable("Customers");
+        modelBuilder.Entity<Vehicle>().ToTable("Vehicles");
+        modelBuilder.Entity<Comment>().ToTable("Comments");
+        modelBuilder.Entity<Part>().ToTable("Parts");
+        modelBuilder.Entity<UsedPart>().ToTable("UsedParts");
+        modelBuilder.Entity<ServiceTask>().ToTable("ServiceTasks");
+        modelBuilder.Entity<ServiceOrder>().ToTable("ServiceOrders");
+    }
 }

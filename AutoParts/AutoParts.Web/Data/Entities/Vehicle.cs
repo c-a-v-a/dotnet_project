@@ -25,6 +25,14 @@ public class Vehicle
     [MaxLength(50)]
     public string Model { get; set; } = String.Empty;
 
+    [Required]
+    [MaxLength(17)]
+    public string? VIN { get; set; }
+
+    [Required]
+    [MaxLength(10)]
+    public string? LicensePlate { get; set; }
+
     [Range(1886, 2100)]
     public int Year { get; set; }
 

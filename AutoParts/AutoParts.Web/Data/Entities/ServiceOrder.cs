@@ -23,7 +23,7 @@ public class ServiceOrder
     [Required]
     public OrderStatus Status { get; set; } = OrderStatus.New;
 
-    public int? MechanicId { get; set; }
+    public string? MechanicId { get; set; }
 
     public User? Mechanic { get; set; }
 

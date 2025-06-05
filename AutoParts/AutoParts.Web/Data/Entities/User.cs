@@ -1,18 +1,11 @@
 ﻿namespace AutoParts.Web.Data.Entities;
 
 using System.ComponentModel.DataAnnotations;
+using AutoParts.Web.Enums;
+using Microsoft.AspNetCore.Identity;
 
-public class User
+public class User : IdentityUser
 {
-    public enum UserRole
-    {
-        Admin,
-        Receptionist,
-        Mechanic
-    };
-
-    public int Id { get; set; }
-
     [Required]
     [MaxLength(50)]
     public string Name { get; set; } = String.Empty;
@@ -22,17 +15,7 @@ public class User
     public string SecondName { get; set; } = String.Empty;
 
     [Required]
-    [Phone]
-    [MaxLength(20)]
-    public string PhoneNumber { get; set; } = String.Empty;
-
-    [Required]
-    [EmailAddress]
-    [MaxLength(50)]
-    public string Email { get; set; } = String.Empty;
-
-    [Required]
-    public UserRole Role { get; set; }
+    public UserRole Role { get; set; } = UserRole.Undefined;
 
     public ICollection<ServiceOrder>? AssignedOrders { get; set; }
 }

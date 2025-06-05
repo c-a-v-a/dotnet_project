@@ -7,7 +7,7 @@ public class Comment
     public int Id { get; set; }
 
     [Required]
-    public int AuthorId { get; set; }
+    public string AuthorId { get; set; } = String.Empty;
 
     [Required]
     public User Author { get; set; } = null!;

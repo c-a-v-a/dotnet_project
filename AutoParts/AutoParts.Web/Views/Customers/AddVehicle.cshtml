@@ -1,0 +1,10 @@
+﻿@model AutoParts.Web.Models.VehicleModel
+
+<form asp-action="AddVehicle" method="post">
+    <div class="form-group">
+        <label asp-for="Make"></label>
+        <input asp-for="Make" class="form-control" />
+    </div>
+    <!-- pozostałe pola -->
+    <button type="submit" class="btn btn-primary">Dodaj pojazd</button>
+</form>

@@ -10,9 +10,13 @@ public class Customer
     [MaxLength(50)]
     public string Name { get; set; } = String.Empty;
 
-    [Required]
+    
     [MaxLength(50)]
     public string SecondName { get; set; } = String.Empty;
+
+    [Required]
+    [MaxLength(50)]
+    public string LastName { get; set; } = string.Empty;
 
     [Required]
     [Phone]

@@ -8,11 +8,11 @@ public class User : IdentityUser
 {
     [Required]
     [MaxLength(50)]
-    public string Name { get; set; } = String.Empty;
+    public string FirstName { get; set; } = String.Empty;
 
     [Required]
     [MaxLength(50)]
-    public string SecondName { get; set; } = String.Empty;
+    public string LastName { get; set; } = String.Empty;
 
     [Required]
     public UserRole Role { get; set; } = UserRole.Undefined;

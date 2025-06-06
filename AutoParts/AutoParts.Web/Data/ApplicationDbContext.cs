@@ -1,13 +1,14 @@
 ﻿namespace AutoParts.Web.Data;
 
 using AutoParts.Web.Data.Entities;
+
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<User>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public DbSet<User> Users { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -20,7 +21,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Customer>().ToTable("Customers");
         modelBuilder.Entity<Vehicle>().ToTable("Vehicles");
         modelBuilder.Entity<Comment>().ToTable("Comments");

@@ -27,6 +27,36 @@
             <a asp-action="Index" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Powrót
             </a>
+            <h4 class="mt-4">Pojazdy klienta</h4>
+
+            @if (Model.Vehicles.Any())
+            {
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Marka</th>
+                            <th>Model</th>
+                            <th>Nr rejestracyjny</th>
+                            <th>Rok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var vehicle in Model.Vehicles)
+                        {
+                            <tr>
+                                <td>@vehicle.Make</td>
+                                <td>@vehicle.Model</td>
+                                <td>@vehicle.LicensePlate</td>
+                                <td>@vehicle.Year</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">Brak zarejestrowanych pojazdów</div>
+            }
             <a asp-controller="Vehicles" asp-action="Create"
                asp-route-customerId="@Model.Id"
                class="btn btn-success ml-2">

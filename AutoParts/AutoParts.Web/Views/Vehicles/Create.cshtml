@@ -1,0 +1,66 @@
+﻿@using AutoParts.Web.Data.Entities
+@model AutoParts.Web.Models.VehicleModel
+
+<h2>Dodaj nowy pojazd</h2>
+
+<form asp-controller="Vehicles" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="CustomerId" value="@ViewBag.CustomerId" />
+
+    <div class="form-group">
+        <label asp-for="Make">Marka*</label>
+        <input asp-for="Make" class="form-control" required />
+        <span asp-validation-for="Make" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Model">Model*</label>
+        <input asp-for="Model" class="form-control" required />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Year">Rok produkcji*</label>
+        <input asp-for="Year" class="form-control" type="number"
+               min="1900" max="@(DateTime.Now.Year + 1)" required />
+        <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LicensePlate">Numer rejestracyjny*</label>
+        <input asp-for="LicensePlate" class="form-control" required />
+        <span asp-validation-for="LicensePlate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VIN">Numer VIN</label>
+        <input asp-for="VIN" class="form-control" />
+        <span asp-validation-for="VIN" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Fuel">Rodzaj paliwa*</label>
+        <select asp-for="Fuel" class="form-control" required
+                asp-items="Html.GetEnumSelectList<Vehicle.FuelType>()">
+            <option value="">-- Wybierz --</option>
+        </select>
+        <span asp-validation-for="Fuel" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Dodaj pojazd</button>
+        <a asp-controller="Customers"
+           asp-action="Details"
+           asp-route-id="@ViewBag.CustomerId"
+           class="btn btn-secondary">
+            Anuluj
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

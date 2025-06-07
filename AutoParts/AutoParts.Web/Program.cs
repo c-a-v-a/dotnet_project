@@ -1,5 +1,9 @@
-﻿using AutoParts.Web.Data;
+﻿using AutoParts.Web.Authorization;
+using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
+using AutoParts.Web.Enums;
+using AutoParts.Web.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +21,18 @@ builder.Services
   .AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("RequiredAdminRole", policy =>
+            policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
+    });
+
+builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
+
+builder.Services.AddSingleton(new UserMapper());
+
 var app = builder.Build();
+
 
 if (!app.Environment.IsDevelopment())
 {

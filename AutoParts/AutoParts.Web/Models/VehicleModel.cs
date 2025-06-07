@@ -1,6 +1,8 @@
 ﻿namespace AutoParts.Web.Models;
+using AutoParts.Web.Data.Entities;
 
 using System.ComponentModel.DataAnnotations;
+using static AutoParts.Web.Data.Entities.Vehicle;
 
 public class VehicleModel
 {
@@ -25,6 +27,9 @@ public class VehicleModel
 
     [MaxLength(10)]
     public string? LicensePlate { get; set; }
+
+    [Required]
+    public FuelType Fuel { get; set; }
 
     [Required]
     public int CustomerId { get; set; }

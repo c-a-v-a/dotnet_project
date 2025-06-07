@@ -1,5 +1,5 @@
-﻿namespace AutoParts.Web.Controllers;
-
+﻿using System.Net.NetworkInformation;
+namespace AutoParts.Web.Controllers;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Models;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/customers/{customerId}/vehicles")]
-public class CustomerVehiclesController : ControllerBase
+public class CustomerVehiclesController : Controller
 {
     private readonly ApplicationDbContext _context;
 
@@ -92,5 +92,28 @@ public class CustomerVehiclesController : ControllerBase
             .ToListAsync();
 
         return vehicles;
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Vehicle vehicle)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Vehicles.Add(vehicle);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Customers", new { id = vehicle.CustomerId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Błąd podczas zapisywania: " + ex.Message);
+            }
+        }
+
+        // Dodaj to dla bezpieczeństwa
+        ViewBag.CustomerId = vehicle.CustomerId;
+        return View("Create", vehicle); // Jawnie podaj nazwę widoku
     }
 }

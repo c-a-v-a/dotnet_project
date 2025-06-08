@@ -8,7 +8,12 @@ public class Part
     public int Id { get; set; }
 
     [Required]
+    [MaxLength(100)]
     public string Name { get; set; } = String.Empty;
+
+    [Required]
+    [MaxLength(100)]
+    public string Type { get; set; } = String.Empty;
 
     [Required]
     [Column(TypeName = "decimal(8,2)")]

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 public class RoleRequirement : IAuthorizationRequirement
 {
-    public UserRole RequiredRole { get; }
-    public RoleRequirement(UserRole role) => RequiredRole = role;
+    public IReadOnlyList<UserRole> RequiredRoles { get; }
+
+    public RoleRequirement(params UserRole[] roles) => RequiredRoles = roles;
 }

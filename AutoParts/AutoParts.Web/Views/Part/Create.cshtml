@@ -1,0 +1,33 @@
+﻿@model AutoParts.Web.Models.PartModel;
+
+@{
+    ViewData["Title"] = "Add part";
+}
+
+<dev class="d-flex flex-column justify-content-start align-items-center h-100 w-100 pt-5">
+  <h1 class="text-primary mb-5">Add part</h1>
+  <div class="h-100 w-75">
+    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+        <div class="mb-3 form-floating">
+            <input asp-for="Type" class="form-control" placeholder="Type"/>
+            <label asp-for="Type" class="form-label">Type</label>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating">
+            <input asp-for="Name" class="form-control" placeholder="Name"/>
+            <label asp-for="Name" class="form-label">Name</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating">
+            <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" placeholder="UnitPrice"/>
+            <label asp-for="UnitPrice" class="form-label">UnitPrice</label>
+            <span asp-validation-for="UnitPrice" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary" type="submit">Add part</button>
+    </form>
+  </div>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

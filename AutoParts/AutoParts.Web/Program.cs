@@ -25,11 +25,15 @@ builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("RequiredAdminRole", policy =>
             policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
+
+        options.AddPolicy("RequiredAdminOrReceptionistRole", policy =>
+            policy.Requirements.Add(new RoleRequirement(UserRole.Admin, UserRole.Receptionist)));
     });
 
 builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
 
 builder.Services.AddSingleton(new UserMapper());
+builder.Services.AddSingleton(new PartMapper());
 
 var app = builder.Build();
 

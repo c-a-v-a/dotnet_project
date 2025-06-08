@@ -18,7 +18,7 @@ public class RoleHandler : AuthorizationHandler<RoleRequirement>
     {
         var user = await _userManager.GetUserAsync(context.User);
 
-        if (user != null && user.Role == requirement.RequiredRole)
+        if (user != null && requirement.RequiredRoles.Contains(user.Role))
         {
             context.Succeed(requirement);
         }

@@ -42,10 +42,16 @@
                             <li class="nav-item">
                               <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
                             </li>
+                            <li class="nav-item">
+                              <a class="nav-link text-dark" asp-area="" asp-controller="Part" asp-action="Index">Part</a>
+                            </li>
                             break;
                           case UserRole.Mechanic:
                             break;
                           case UserRole.Receptionist:
+                            <li class="nav-item">
+                              <a class="nav-link text-dark" asp-area="" asp-controller="Part" asp-action="Index">Part</a>
+                            </li>
                             break;
                         }
                       }

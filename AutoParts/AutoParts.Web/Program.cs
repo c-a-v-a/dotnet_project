@@ -1,4 +1,11 @@
-﻿using AutoParts.Web.Data;
+﻿using AutoParts.Web.Authorization;
+using AutoParts.Web.Data;
+using AutoParts.Web.Data.Entities;
+using AutoParts.Web.Enums;
+using AutoParts.Web.Mappers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,13 +17,31 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+
+builder.Services
+  .AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+  .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("RequiredAdminRole", policy =>
+            policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
+
+        options.AddPolicy("RequiredAdminOrReceptionistRole", policy =>
+            policy.Requirements.Add(new RoleRequirement(UserRole.Admin, UserRole.Receptionist)));
+    });
+
+builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
+
+builder.Services.AddSingleton(new UserMapper());
+builder.Services.AddSingleton(new PartMapper());
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -25,7 +50,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
   name: "default",

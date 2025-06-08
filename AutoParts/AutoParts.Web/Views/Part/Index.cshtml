@@ -1,0 +1,31 @@
+﻿@model List<AutoParts.Web.Models.PartModel>
+
+@{
+    ViewData["Title"] = "Part list";
+}
+
+<dev class="d-flex flex-column justify-content-start align-items-center h-100 w-100 pt-5">
+  <h1 class="text-primary mb-5">Part list</h1>
+  <div class="h-100 w-75">
+    <a asp-controller="Part" asp-action="Create" class="btn btn-primary mb-5 w-100">Add new model</a>
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">Name</th>
+          <th scope="col">Unit Price</th>
+          <th scope="col">Update</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var part in Model)
+        {
+            <tr>
+                @await Html.PartialAsync("_UpdatePartialForm", part)
+            </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+<dev>

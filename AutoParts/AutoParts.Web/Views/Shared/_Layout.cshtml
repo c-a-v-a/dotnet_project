@@ -1,4 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using AutoParts.Web.Data.Entities
+@using AutoParts.Web.Enums
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+  User? currentUser = null;
+
+  if (SignInManager.IsSignedIn(User))
+  {
+    currentUser = await UserManager.GetUserAsync(User);
+  }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,22 +24,49 @@
     <link rel="stylesheet" href="~/AutoParts.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body>
+<body class="vh-100 d-flex flex-column m-0 p-0">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AutoParts.Web</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AutoParts</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                      @if (currentUser != null)
+                      {
+                        switch (currentUser.Role)
+                        {
+                          case UserRole.Admin:
+                            <li class="nav-item">
+                              <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link text-dark" asp-area="" asp-controller="Part" asp-action="Index">Part</a>
+                            </li>
+                            break;
+                          case UserRole.Mechanic:
+                            break;
+                          case UserRole.Receptionist:
+                            <li class="nav-item">
+                              <a class="nav-link text-dark" asp-area="" asp-controller="Part" asp-action="Index">Part</a>
+                            </li>
+                            break;
+                        }
+                      }
+                    </ul>
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                          @if (SignInManager.IsSignedIn(User))
+                          {
+                          <a class="btn btn-primary" href="~/Identity/Account/Manage">Profile</a>
+                          }
+                          else
+                          {
+                          <a class="btn btn-primary" href="~/Identity/Account/Login">Log in</a>
+                          }
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Customers" asp-action="Index">Klienci</a>
@@ -34,17 +76,12 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container flex-grow-1">
+        <main role="main" class="pb-3 h-100">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - AutoParts.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

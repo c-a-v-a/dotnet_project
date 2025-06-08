@@ -1,0 +1,50 @@
+﻿@model List<AutoParts.Web.Models.UserModel>
+
+@using AutoParts.Web.Enums;
+
+@{
+    ViewData["Title"] = "User list";
+}
+
+<div class="d-flex flex-column justify-content-start align-items-center h-100 w-100 pt-5">
+  <h1 class="text-primary mb-5">User list</h1>
+  <div class="h-100 w-75">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">First name</th>
+          <th scope="col">Last name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Role</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var user in Model)
+        {
+          <tr>
+            <form asp-action="UpdateRole" method="post">
+                <input type="hidden" name="Id" value="@user.Id" />
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>
+                    <select name="Role" class="form-select">
+                        @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                        {
+                            <option value="@role" selected="@(user.Role == role)">
+                                @role
+                            </option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-primary" type="submit">Update</button>
+                </td>
+            </form>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+<div>

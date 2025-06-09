@@ -1,0 +1,62 @@
+@model AutoParts.Web.Models.VehicleModel;
+@using AutoParts.Web.Enums;
+
+@{
+    ViewData["Title"] = "Add vehicle";
+}
+
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4 class="my-auto">Add vehicle</h4>
+  </div>
+    <div class="card-body d-flex flex-column justify-content-center align-items-center w-100">
+        <form asp-action="Create" method="post" class="needs-validation d-flex flex-column justify-content-center align-items-center w-100" novalidate>
+            <input asp-for="CustomerId" type="hidden" />
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="Make" class="form-control" placeholder="Make"/>
+                <label asp-for="Make" class="form-label">Make</label>
+                <span asp-validation-for="Make" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="ModelName" class="form-control" placeholder="Model name"/>
+                <label asp-for="ModelName" class="form-label">Model name</label>
+                <span asp-validation-for="ModelName" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="Year" class="form-control" placeholder="Phone number" type="number" min="1900" max="2100" step="1" value="2025"/>
+                <label asp-for="Year" class="form-label">Year</label>
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="Color" class="form-control" placeholder="Color"/>
+                <label asp-for="Color" class="form-label">Color</label>
+                <span asp-validation-for="Color" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="VIN" class="form-control" placeholder="VIN"/>
+                <label asp-for="VIN" class="form-label">VIN</label>
+                <span asp-validation-for="VIN" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <input asp-for="LicensePlate" class="form-control" placeholder="LicensePlate"/>
+                <label asp-for="LicensePlate" class="form-label">LicensePlate</label>
+                <span asp-validation-for="LicensePlate" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-floating w-50">
+                <select name="Fuel" class="form-select" id="floatingSelect">
+                    <option value="" selected>undefined</option>
+                    @foreach (FuelType fuel in Enum.GetValues(typeof(FuelType)))
+                    {
+                        <option value="@fuel">@fuel</option>
+                    }
+                </select>
+                <label for="floatingSelect">Fuel type</label>
+            </div>
+            <button class="btn btn-primary w-50 mb-3" type="submit">Add vehicle</button>
+        </form>
+    </div>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

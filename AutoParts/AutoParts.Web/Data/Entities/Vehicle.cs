@@ -1,20 +1,10 @@
 ﻿namespace AutoParts.Web.Data.Entities;
 
 using System.ComponentModel.DataAnnotations;
+using AutoParts.Web.Enums;
 
 public class Vehicle
 {
-    public enum FuelType
-    {
-        Petrol,
-        Diesel,
-        Gas,
-        Hybrid,
-        Electric,
-        Hydrogen,
-        Other
-    };
-
     public int Id { get; set; }
 
     [Required]
@@ -23,12 +13,19 @@ public class Vehicle
 
     [Required]
     [MaxLength(50)]
-    public string Model { get; set; } = String.Empty;
+    public string ModelName { get; set; } = String.Empty;
 
-    [Range(1886, 2100)]
+    [MaxLength(17)]
+    public string? VIN { get; set; }
+
+    [MaxLength(10)]
+    public string? LicensePlate { get; set; }
+
+    [Required]
+    [Range(1900, 2100)]
     public int Year { get; set; }
 
-    [MaxLength(20)]
+    [MaxLength(30)]
     public string Color { get; set; } = String.Empty;
 
     public FuelType Fuel { get; set; }

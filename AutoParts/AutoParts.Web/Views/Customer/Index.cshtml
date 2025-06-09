@@ -1,0 +1,44 @@
+﻿@model IEnumerable<AutoParts.Web.Models.CustomerModel>
+
+@{
+    ViewData["Title"] = "Customer list";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="my-auto">Customer list</h4>
+        <a asp-action="Create" class="btn btn-primary my-auto">
+            <i class="fas fa-plus"></i> Add customer
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered align-middle text-center">
+            <thead>
+                <tr>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>@customer.FirstName</td>
+                        <td>@customer.LastName</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td>@customer.Email</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@customer.Id"
+                               class="btn btn-primary" title="Details">
+                                Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

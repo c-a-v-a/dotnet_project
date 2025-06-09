@@ -4,6 +4,7 @@ using AutoParts.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoParts.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250609130241_ChangeVehicleFieldsToNullable")]
+    partial class ChangeVehicleFieldsToNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,9 +123,6 @@ namespace AutoParts.Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -133,16 +133,9 @@ namespace AutoParts.Web.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
-
                     b.HasIndex("MechanicId");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("ServiceOrders", (string)null);
                 });
@@ -484,27 +477,11 @@ namespace AutoParts.Web.Migrations
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.ServiceOrder", b =>
                 {
-                    b.HasOne("AutoParts.Web.Data.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AutoParts.Web.Data.Entities.User", "Mechanic")
                         .WithMany("AssignedOrders")
                         .HasForeignKey("MechanicId");
 
-                    b.HasOne("AutoParts.Web.Data.Entities.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
                     b.Navigation("Mechanic");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.ServiceTask", b =>

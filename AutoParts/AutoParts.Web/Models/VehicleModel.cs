@@ -1,10 +1,13 @@
 ﻿namespace AutoParts.Web.Models;
 
 using System.ComponentModel.DataAnnotations;
+using AutoParts.Web.DTOs;
 using AutoParts.Web.Enums;
 
 public class VehicleModel
 {
+    public int Id { get; set; }
+
     [Required(ErrorMessage = "The make is required.")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "The make name needs to be between 3 and 50 characters.")]
     public string Make { get; set; } = string.Empty;
@@ -26,8 +29,11 @@ public class VehicleModel
     [MaxLength(10, ErrorMessage = "The license plate length needs to be up most 10 characters.")]
     public string? LicensePlate { get; set; }
 
-    public FuelType? Fuel { get; set; }
+    public string? ImageUrl { get; set; }
 
-    [Required]
+    public FuelType Fuel { get; set; }
+
     public int CustomerId { get; set; }
+
+    public CustomerShortDto? Customer { get; set; } = null!;
 }

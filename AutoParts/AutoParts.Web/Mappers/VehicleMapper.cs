@@ -12,5 +12,9 @@ public partial class VehicleMapper
 
     public partial Vehicle ToEntity(VehicleModel model);
 
-    public partial VehicleShortDto ToShortDto(Vehicle vehicle);
+    public partial void ToEntity(VehicleModel source, [MappingTarget] Vehicle target);
+
+    public partial CustomerShortDto ToShortDto(Customer customer);
+
+    public Customer FromShortDto(CustomerShortDto shortDto) => null!;
 }

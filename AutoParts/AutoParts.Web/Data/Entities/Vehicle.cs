@@ -28,11 +28,12 @@ public class Vehicle
     [MaxLength(30)]
     public string Color { get; set; } = String.Empty;
 
-    public FuelType Fuel { get; set; }
+    public string? ImageUrl { get; set; }
+
+    public FuelType Fuel { get; set; } = FuelType.Other;
 
     [Required]
     public int CustomerId { get; set; }
 
-    [Required]
-    public Customer Customer { get; set; } = null!;
+    public Customer? Customer { get; set; } = null!;
 }

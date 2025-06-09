@@ -27,6 +27,14 @@ public class ServiceOrder
 
     public User? Mechanic { get; set; }
 
+    [Required]
+    public int CustomerId { get; set; }
+    public Customer Customer { get; set; } = default!;
+
+    [Required]
+    public int VehicleId { get; set; }
+    public Vehicle Vehicle { get; set; } = default!;
+
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     [NotMapped]

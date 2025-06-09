@@ -1,0 +1,29 @@
+﻿@model CreateServiceOrderViewModel
+
+<h2>Nowe zlecenie</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="CustomerId">Klient</label>
+        <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VehicleId">Pojazd</label>
+        <select asp-for="VehicleId" asp-items="Model.Vehicles" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MechanicId">Mechanik (opcjonalnie)</label>
+        <select asp-for="MechanicId" asp-items="Model.Mechanics" class="form-control">
+            <option value="">-- Nie przypisuj --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Opis problemu</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Utwórz zlecenie</button>
+</form>

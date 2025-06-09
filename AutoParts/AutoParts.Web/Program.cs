@@ -14,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 
 builder.Services
@@ -34,6 +35,8 @@ builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
 
 builder.Services.AddSingleton(new UserMapper());
 builder.Services.AddSingleton(new PartMapper());
+builder.Services.AddSingleton(new CustomerMapper());
+builder.Services.AddSingleton(new VehicleMapper());
 
 var app = builder.Build();
 

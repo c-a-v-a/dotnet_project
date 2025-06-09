@@ -10,7 +10,7 @@
     <h4 class="my-auto">Add vehicle</h4>
   </div>
     <div class="card-body d-flex flex-column justify-content-center align-items-center w-100">
-        <form asp-action="Create" method="post" class="needs-validation d-flex flex-column justify-content-center align-items-center w-100" novalidate>
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation d-flex flex-column justify-content-center align-items-center w-100" novalidate>
             <input asp-for="CustomerId" type="hidden" />
             <div class="mb-3 form-floating w-50">
                 <input asp-for="Make" class="form-control" placeholder="Make"/>
@@ -43,8 +43,11 @@
                 <span asp-validation-for="LicensePlate" class="text-danger"></span>
             </div>
             <div class="mb-3 form-floating w-50">
+                <input type="file" class="form-control" name="ImageFile" id="ImageFile" placeholder="Image"/>
+                <label for="ImageFile" class="form-label">Upload image</label>
+            </div>
+            <div class="mb-3 form-floating w-50">
                 <select name="Fuel" class="form-select" id="floatingSelect">
-                    <option value="" selected>undefined</option>
                     @foreach (FuelType fuel in Enum.GetValues(typeof(FuelType)))
                     {
                         <option value="@fuel">@fuel</option>

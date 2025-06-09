@@ -1,0 +1,38 @@
+@model AutoParts.Web.Models.CustomerModel;
+
+@{
+    ViewData["Title"] = "Add customer";
+}
+
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4 class="my-auto">Add customer</h4>
+  </div>
+    <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="FirstName" class="form-control" placeholder="First name"/>
+            <label asp-for="FirstName" class="form-label">First name</label>
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="LastName" class="form-control" placeholder="Last name"/>
+            <label asp-for="LastName" class="form-label">Last name</label>
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="PhoneNumber" class="form-control" placeholder="Phone number" type="tel"/>
+            <label asp-for="PhoneNumber" class="form-label">Phone number</label>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="Email" class="form-control" placeholder="Email" type="email"/>
+            <label asp-for="Email" class="form-label">Email</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary align-self-center w-25" type="submit">Add customer</button>
+    </form>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

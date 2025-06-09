@@ -35,6 +35,8 @@ builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
 
 builder.Services.AddSingleton(new UserMapper());
 builder.Services.AddSingleton(new PartMapper());
+builder.Services.AddSingleton(new CustomerMapper());
+builder.Services.AddSingleton(new VehicleMapper());
 
 var app = builder.Build();
 

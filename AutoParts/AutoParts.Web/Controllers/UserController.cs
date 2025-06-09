@@ -20,6 +20,7 @@ public class UserController : Controller
         _mapper = mapper;
     }
 
+    // GET: /User/Index
     [HttpGet]
     public IActionResult Index()
     {
@@ -28,6 +29,7 @@ public class UserController : Controller
         return View(models);
     }
 
+    // POST: /User/UpdateRole
     [HttpPost]
     public async Task<IActionResult> UpdateRole(string id, UserRole role)
     {

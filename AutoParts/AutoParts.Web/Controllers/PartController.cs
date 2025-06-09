@@ -1,6 +1,5 @@
 ﻿namespace AutoParts.Web.Controllers;
 
-using System;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
@@ -21,6 +20,7 @@ public class PartController : Controller
         _mapper = mapper;
     }
 
+    // GET: /Part/Index
     [HttpGet]
     public IActionResult Index()
     {
@@ -32,12 +32,14 @@ public class PartController : Controller
         return View(models);
     }
 
+    // GET: /Part/Create
     [HttpGet]
     public IActionResult Create()
     {
         return View();
     }
 
+    // POST: /Part/Create
     [HttpPost]
     public async Task<IActionResult> Create(PartModel model)
     {
@@ -55,6 +57,7 @@ public class PartController : Controller
         return RedirectToAction("Index");
     }
 
+    // POST: /Part/Update
     [HttpPost]
     public async Task<IActionResult> Update(PartModel model)
     {
@@ -89,6 +92,7 @@ public class PartController : Controller
         return RedirectToAction("Index");
     }
 
+    // POST: /Part/Delete?id=id
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {

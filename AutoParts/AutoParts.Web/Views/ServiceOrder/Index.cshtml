@@ -1,0 +1,31 @@
+﻿@model IEnumerable<AutoParts.Web.Data.Entities.ServiceOrder>
+
+@{
+    ViewData["Title"] = "Lista zleceń";
+}
+
+<h2>Lista zleceń</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Opis</th>
+            <th>Status</th>
+            <th>Mechanik</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.Status</td>
+                <td>@item.Mechanic?.FirstName ?? "—"</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Szczegóły</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

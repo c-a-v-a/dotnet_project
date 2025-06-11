@@ -2,6 +2,7 @@
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -71,4 +72,92 @@ public class ServiceOrderController : Controller
 
         return RedirectToAction("Index", "Home"); // lub inny widok
     }
+
+    public async Task<IActionResult> Index()
+    {
+        var orders = await _context.ServiceOrders
+            .Include(o => o.Mechanic)
+            .ToListAsync();
+
+        return View(orders);
+    }
+
+    
+    public async Task<IActionResult> EditStatus(int id)
+    {
+        var order = await _context.ServiceOrders.FindAsync(id);
+        if (order == null) return NotFound();
+
+        var userId = _userManager.GetUserId(User);
+        var isAssignedMechanic = order.MechanicId == userId;
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAssignedMechanic && !isAdmin)
+            return Forbid();
+
+        var viewModel = new EditOrderStatusViewModel
+        {
+            Id = order.Id,
+            Status = order.Status,
+            MechanicId = order.MechanicId,
+            IsAssignedMechanic = isAssignedMechanic,
+            IsAdmin = isAdmin
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditStatus(EditOrderStatusViewModel model)
+    {
+        var order = await _context.ServiceOrders.FindAsync(model.Id);
+        if (order == null) return NotFound();
+
+        var userId = _userManager.GetUserId(User);
+        var isAssignedMechanic = order.MechanicId == userId;
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAssignedMechanic && !isAdmin)
+            return Forbid();
+
+        order.Status = model.Status;
+
+        if (model.Status == ServiceOrder.OrderStatus.Finished)
+        {
+            order.EndDate = DateTime.Now;
+        }
+
+        _context.ServiceOrders.Update(order);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Details", new { id = model.Id });
+    }
+
+   
+
+public async Task<IActionResult> Details(int? id)
+{
+    if (id == null)
+    {
+        return NotFound();
+    }
+
+    var order = await _context.ServiceOrders
+        .Include(o => o.Customer)
+        .Include(o => o.Vehicle)
+        .Include(o => o.Mechanic)
+        .Include(o => o.Tasks)
+        .Include(o => o.Comments)
+        .FirstOrDefaultAsync(o => o.Id == id);
+
+    if (order == null)
+    {
+        return NotFound();
+    }
+
+    return View(order);
+}
+
+
 }

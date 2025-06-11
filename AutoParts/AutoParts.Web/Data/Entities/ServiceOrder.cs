@@ -27,6 +27,8 @@ public class ServiceOrder
 
     public User? Mechanic { get; set; }
 
+    public DateTime? EndDate { get; set; }
+
     [Required]
     public int CustomerId { get; set; }
     public Customer Customer { get; set; } = default!;

@@ -52,9 +52,16 @@
                             <li class=" = "nav-item">
                              <a class="nav-link text-dark" asp-controller="ServiceOrder" asp-action="Create"> Add Service</a>
                             </li>
+                            <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="ServiceOrder" asp-action="Index">Zlecenia</a>
+                                    </li>
+
                                
                             break;
                           case UserRole.Mechanic:
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="ServiceOrder" asp-action="Index">Zlecenia</a>
+                                    </li>
                             break;
                                 case UserRole.Receptionist:
                                     <li class="nav-item">

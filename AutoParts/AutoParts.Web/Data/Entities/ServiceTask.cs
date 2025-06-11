@@ -8,6 +8,9 @@ public class ServiceTask
     public int Id { get; set; }
 
     [Required]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
     public string Description { get; set; } = String.Empty;
 
     [Required]
@@ -20,4 +23,7 @@ public class ServiceTask
 
     [NotMapped]
     public decimal TotalCost => UsedParts.Sum(part => part.TotalPrice) + LaborCost;
+
+    public int ServiceOrderId { get; set; }
+    public ServiceOrder ServiceOrder { get; set; } = null!;
 }

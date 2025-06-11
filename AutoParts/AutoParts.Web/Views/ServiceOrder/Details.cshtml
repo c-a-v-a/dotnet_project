@@ -71,3 +71,21 @@
     }
 
 </div>
+
+<h4>Czynności serwisowe</h4>
+@if (Model.Tasks.Any())
+{
+    <ul>
+        @foreach (var task in Model.Tasks)
+        {
+            <li>@task.Name - @task.LaborCost zł</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Brak zadań.</p>
+}
+    <a class="btn btn-sm btn-success" asp-action="AddTask" asp-route-orderId="@Model.Id">Dodaj czynność</a>
+
+

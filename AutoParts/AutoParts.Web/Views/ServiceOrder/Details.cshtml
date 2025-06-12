@@ -72,13 +72,26 @@
 
 </div>
 
+<hr class="my-4 text-secondary" style="opacity: 0.5;" />
 <h4>Czynności serwisowe</h4>
+
 @if (Model.Tasks.Any())
 {
     <ul>
         @foreach (var task in Model.Tasks)
         {
-            <li>@task.Name - @task.LaborCost zł</li>
+            <li>
+                <strong>@task.Name</strong> - @task.LaborCost zł
+
+                @if (User.IsInRole("Admin") || Model.MechanicId == UserManager.GetUserId(User))
+                {
+                    <a class="btn btn-sm btn-outline-primary ms-2"
+                       asp-action="AddUsedPart"
+                       asp-route-taskId="@task.Id">
+                        Dodaj część
+                    </a>
+                }    
+            </li>
         }
     </ul>
 }
@@ -86,6 +99,67 @@ else
 {
     <p>Brak zadań.</p>
 }
-    <a class="btn btn-sm btn-success" asp-action="AddTask" asp-route-orderId="@Model.Id">Dodaj czynność</a>
+
+<a class="btn btn-sm btn-success mt-2" asp-action="AddTask" asp-route-orderId="@Model.Id">Dodaj czynność</a>
+
+<hr />
+
+
+<h4>Części</h4>
+
+<a class="btn btn-sm btn-success mt-2"
+   asp-action="AddUsedPart"
+   asp-route-taskId="@Model.Tasks.FirstOrDefault()?.Id">
+    Dodaj część
+</a>
+
+@if (Model.Tasks.Any(t => t.UsedParts != null && t.UsedParts.Any()))
+{
+    <ul class="ms-4">
+        @{
+            var groupedParts = Model.Tasks
+            .Where(t => t.UsedParts != null)
+            .SelectMany(t => t.UsedParts)
+            .GroupBy(p => p.Part.Name)
+            .Select(g => new
+            {
+                Name = g.Key,
+                TotalQuantity = g.Sum(p => p.Quantity),
+                TotalPrice = g.Sum(p => p.TotalPrice)
+            });
+        }
+
+        <ul class="ms-4">
+            @foreach (var part in groupedParts)
+            {
+                <li>
+                    @part.Name – Ilość: @part.TotalQuantity, Cena: @part.TotalPrice zł
+                </li>
+            }
+        </ul>
+    </ul>
+}
+else
+{
+    <p class="ms-4 text-muted">Brak części</p>
+}
+
+<hr class="my-4 text-secondary" style="opacity: 0.5;" />
+<h4>Całkowity koszt zlecenia</h4>
+@{
+    decimal totalLabor = Model.Tasks.Sum(t => t.LaborCost);
+    decimal totalParts = Model.Tasks
+        .Where(t => t.UsedParts != null)
+        .SelectMany(t => t.UsedParts)
+        .Sum(p => p.TotalPrice);
+    decimal totalCost = totalLabor + totalParts;
+}
+
+<ul>
+    <li>Robocizna: <strong>@totalLabor zł</strong></li>
+    <li>Części: <strong>@totalParts zł</strong></li>
+    <li>Suma: <strong>@totalCost zł</strong></li>
+</ul>
+
 
 

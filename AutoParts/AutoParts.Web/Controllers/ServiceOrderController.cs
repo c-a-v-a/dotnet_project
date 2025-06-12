@@ -82,7 +82,7 @@ public class ServiceOrderController : Controller
         return View(orders);
     }
 
-    
+
     public async Task<IActionResult> EditStatus(int id)
     {
         var order = await _context.ServiceOrders.FindAsync(id);
@@ -134,31 +134,33 @@ public class ServiceOrderController : Controller
         return RedirectToAction("Details", new { id = model.Id });
     }
 
-   
 
-public async Task<IActionResult> Details(int? id)
-{
-    if (id == null)
+
+    public async Task<IActionResult> Details(int? id)
     {
-        return NotFound();
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var order = await _context.ServiceOrders
+            .Include(o => o.Customer)
+            .Include(o => o.Vehicle)
+            .Include(o => o.Mechanic)
+            .Include(o => o.Tasks)
+            .ThenInclude(t => t.UsedParts) 
+            .ThenInclude(p => p.Part)  
+            .Include(o => o.Comments)
+            .ThenInclude(c => c.Author)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return View(order);
     }
-
-    var order = await _context.ServiceOrders
-        .Include(o => o.Customer)
-        .Include(o => o.Vehicle)
-        .Include(o => o.Mechanic)
-        .Include(o => o.Tasks)
-        .Include(o => o.Comments)
-        .ThenInclude(c => c.Author)
-        .FirstOrDefaultAsync(o => o.Id == id);
-
-    if (order == null)
-    {
-        return NotFound();
-    }
-
-    return View(order);
-}
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -213,6 +215,74 @@ public async Task<IActionResult> Details(int? id)
         await _context.SaveChangesAsync();
 
         return RedirectToAction("Details", new { id = model.ServiceOrderId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddUsedPart(int taskId)
+    {
+        var task = await _context.ServiceTasks
+            .Include(t => t.ServiceOrder)
+            .FirstOrDefaultAsync(t => t.Id == taskId);
+
+        if (task == null)
+            return NotFound();
+
+        var parts = await _context.Parts.ToListAsync();
+
+        var viewModel = new AddUsedPartViewModel
+        {
+            ServiceTaskId = taskId,
+            AvailableParts = parts.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = $"{p.Name} ({p.UnitPrice} zł)"
+            }).ToList()
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddUsedPart(AddUsedPartViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            // Reload listy części, jeśli coś poszło nie tak
+            model.AvailableParts = await _context.Parts
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = $"{p.Name} ({p.UnitPrice} zł)"
+                }).ToListAsync();
+
+            return View(model);
+        }
+
+        var part = await _context.Parts.FindAsync(model.PartId);
+        if (part == null)
+        {
+            ModelState.AddModelError("PartId", "Nie znaleziono części.");
+            return View(model);
+        }
+
+        var usedPart = new UsedPart
+        {
+            PartId = part.Id,
+            Quantity = model.Quantity,
+            ServiceTaskId = model.ServiceTaskId
+        };
+
+        _context.UsedParts.Add(usedPart);
+        await _context.SaveChangesAsync();
+
+        // Pobierz ID zlecenia przez relację z zadaniem
+        var orderId = await _context.ServiceTasks
+            .Where(t => t.Id == model.ServiceTaskId)
+            .Select(t => t.ServiceOrderId)
+            .FirstOrDefaultAsync();
+
+        return RedirectToAction("Details", new { id = orderId });
     }
 
 

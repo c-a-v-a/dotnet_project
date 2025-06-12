@@ -1,5 +1,7 @@
 ﻿namespace AutoParts.Web.Controllers;
 
+using Rotativa.AspNetCore.Options;
+using Rotativa.AspNetCore;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
@@ -112,4 +114,119 @@ public class CustomerController : Controller
 
         return RedirectToAction("Index");
     }
+
+    public async Task<IActionResult> ClientRepairReport(int customerId, DateTime? month, int? vehicleId)
+    {
+        var vehicles = await _context.Vehicles
+       .Where(v => v.CustomerId == customerId)
+       .Select(v => new ReportVehicleItem
+       {
+           Id = v.Id,
+           Name = v.Make + " " + v.ModelName + " (" + v.LicensePlate + ")"
+       }).ToListAsync();
+
+        IQueryable<ServiceOrder> query = _context.ServiceOrders
+    .Include(o => o.Vehicle)
+    .Include(o => o.Tasks)
+        .ThenInclude(t => t.UsedParts)
+            .ThenInclude(p => p.Part);
+
+        if (month.HasValue)
+        {
+            var start = new DateTime(month.Value.Year, month.Value.Month, 1);
+            var end = start.AddMonths(1);
+            query = query.Where(o => o.EndDate >= start && o.EndDate < end);
+        }
+
+        if (vehicleId.HasValue)
+        {
+            query = query.Where(o => o.VehicleId == vehicleId);
+        }
+
+        var orders = await query.ToListAsync();
+
+        var model = new ClientRepairReportViewModel
+        {
+            CustomerId = customerId,
+            SelectedMonth = month,
+            SelectedVehicleId = vehicleId,
+            Vehicles = await _context.Vehicles
+                .Where(v => v.CustomerId == customerId)
+                .Select(v => new ReportVehicleItem
+                {
+                    Id = v.Id,
+                    Name = v.Make + " " + v.ModelName + " (" + v.LicensePlate + ")"
+                }).ToListAsync(),
+            Orders = orders.Select(o => new RepairReportItem
+            {
+                // Jeśli EndDate jest null, daj minimalną datę lub obsłuż to w widoku
+                Date = o.EndDate ?? DateTime.MinValue,
+                Vehicle = o.Vehicle.Make + " " + o.Vehicle.ModelName,
+                Description = o.Description,
+                LaborCost = o.Tasks.Sum(t => t.LaborCost),
+                PartsCost = o.Tasks.SelectMany(t => t.UsedParts).Sum(p => p.TotalPrice)
+            }).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GeneratePdfReport(int customerId, DateTime? month, int? vehicleId)
+    {
+        // Ładujesz dane identycznie jak w ClientRepairReport:
+        var vehicles = await _context.Vehicles
+            .Where(v => v.CustomerId == customerId)
+            .Select(v => new ReportVehicleItem
+            {
+                Id = v.Id,
+                Name = v.Make + " " + v.ModelName + " (" + v.LicensePlate + ")"
+            }).ToListAsync();
+
+        IQueryable<ServiceOrder> query = _context.ServiceOrders
+            .Where(o => o.CustomerId == customerId)
+            .Include(o => o.Vehicle)
+            .Include(o => o.Tasks)
+                .ThenInclude(t => t.UsedParts)
+                    .ThenInclude(p => p.Part);
+
+        if (month.HasValue)
+        {
+            var start = new DateTime(month.Value.Year, month.Value.Month, 1);
+            var end = start.AddMonths(1);
+            query = query.Where(o => o.EndDate >= start && o.EndDate < end);
+        }
+
+        if (vehicleId.HasValue)
+        {
+            query = query.Where(o => o.VehicleId == vehicleId);
+        }
+
+        var orders = await query.ToListAsync();
+
+        var model = new ClientRepairReportViewModel
+        {
+            CustomerId = customerId,
+            SelectedMonth = month,
+            SelectedVehicleId = vehicleId,
+            Vehicles = vehicles,
+            Orders = orders.Select(o => new RepairReportItem
+            {
+                Date = o.EndDate ?? DateTime.MinValue,
+                Vehicle = o.Vehicle.Make + " " + o.Vehicle.ModelName,
+                Description = o.Description,
+                LaborCost = o.Tasks.Sum(t => t.LaborCost),
+                PartsCost = o.Tasks.SelectMany(t => t.UsedParts).Sum(p => p.TotalPrice)
+            }).ToList()
+        };
+
+        return new ViewAsPdf("ClientRepairReportPdf", model)
+        {
+            FileName = "RaportKosztow.pdf",
+            PageOrientation = Orientation.Portrait,
+            PageSize = Size.A4
+        };
+    }
+
+
 }

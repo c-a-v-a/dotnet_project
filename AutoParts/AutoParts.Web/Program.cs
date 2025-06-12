@@ -40,6 +40,8 @@ builder.Services.AddSingleton(new VehicleMapper());
 
 var app = builder.Build();
 
+Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
+
 
 if (!app.Environment.IsDevelopment())
 {

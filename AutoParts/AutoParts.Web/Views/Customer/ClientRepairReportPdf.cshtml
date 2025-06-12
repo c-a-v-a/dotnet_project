@@ -1,0 +1,56 @@
+﻿@model AutoParts.Web.Models.ClientRepairReportViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Raport kosztów napraw</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h2 { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #aaa; padding: 6px; text-align: left; }
+        th { background-color: #eee; }
+        .right { text-align: right; }
+    </style>
+</head>
+<body>
+    <h2>Raport kosztów napraw</h2>
+
+    <p><strong>Miesiąc:</strong> @(Model.SelectedMonth?.ToString("yyyy-MM") ?? "-")</p>
+    <p>
+        <strong>Pojazd:</strong>
+        @{
+            var selected = Model.Vehicles.FirstOrDefault(v => v.Id == Model.SelectedVehicleId);
+            @(selected?.Name
+ ?? "Wszystkie")
+        }
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Pojazd</th>
+                <th>Opis</th>
+                <th class="right">Robocizna</th>
+                <th class="right">Części</th>
+                <th class="right">Suma</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Orders)
+            {
+                <tr>
+                    <td>@(item.Date == DateTime.MinValue ? "-" : item.Date.ToShortDateString())</td>
+                    <td>@item.Vehicle</td>
+                    <td>@item.Description</td>
+                    <td class="right">@item.LaborCost.ToString("N2") zł</td>
+                    <td class="right">@item.PartsCost.ToString("N2") zł</td>
+                    <td class="right"><strong>@item.Total.ToString("N2") zł</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

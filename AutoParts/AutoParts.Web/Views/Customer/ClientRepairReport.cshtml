@@ -1,0 +1,67 @@
+﻿@model AutoParts.Web.Models.ClientRepairReportViewModel
+
+<h2>Raport kosztów napraw</h2>
+
+<form method="get" class="mb-4">
+    <input type="hidden" name="customerId" value="@Model.CustomerId" />
+    <div class="row g-2">
+        <div class="col-auto">
+            <label>Miesiąc:</label>
+            <input type="month" name="month" value="@Model.SelectedMonth?.ToString("yyyy-MM")" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <label>Pojazd:</label>
+            <select name="vehicleId" class="form-select">
+                <option value="">Wszystkie</option>
+                @foreach (var v in Model.Vehicles)
+                {
+                    <option value="@v.Id" selected="@(Model.SelectedVehicleId == v.Id)">
+                        @v.Name
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Pojazd</th>
+            <th>Opis</th>
+            <th>Robocizna</th>
+            <th>Części</th>
+            <th>Suma</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders)
+        {
+            <tr>
+                <td>@(item.Date == DateTime.MinValue ? "-" : item.Date.ToShortDateString())</td>
+                <td>@item.Vehicle</td>
+                <td>@item.Description</td>
+                <td>@item.LaborCost zł</td>
+                <td>@item.PartsCost zł</td>
+                <td><strong>@item.Total zł</strong></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Orders.Any())
+{
+    <a class="btn btn-outline-secondary"
+       asp-action="GeneratePdfReport"
+       asp-route-customerId="@Model.CustomerId"
+       asp-route-month="@Model.SelectedMonth?.ToString("yyyy-MM")"
+       asp-route-vehicleId="@Model.SelectedVehicleId"
+       target="_blank">
+        Pobierz PDF
+    </a>
+}
+

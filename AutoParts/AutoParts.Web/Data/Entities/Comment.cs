@@ -1,26 +1,22 @@
-﻿namespace AutoParts.Web.Data.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-using System.ComponentModel.DataAnnotations;
+namespace AutoParts.Web.Data.Entities;
 
 public class Comment
 {
     public int Id { get; set; }
 
     [Required]
-    public string AuthorId { get; set; } = String.Empty;
+    public string Text { get; set; } = string.Empty;
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Required]
-    public User Author { get; set; } = null!;
+    public string AuthorId { get; set; }
 
-    [Required]
-    public string Content { get; set; } = String.Empty;
+    public User Author { get; set; }
 
-    [Required]
-    public DateTime CreatedAt { get; set; }
-
-    [Required]
     public int ServiceOrderId { get; set; }
 
-    [Required]
-    public ServiceOrder ServiceOrder { get; set; } = null!;
+    public ServiceOrder ServiceOrder { get; set; }
 }

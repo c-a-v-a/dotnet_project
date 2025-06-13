@@ -188,5 +188,34 @@ public async Task<IActionResult> Details(int? id)
         return RedirectToAction("Details", new { id = model.ServiceOrderId });
     }
 
+    [HttpGet]
+    public IActionResult AddTask(int orderId)
+    {
+        return View(new AddServiceTaskViewModel { ServiceOrderId = orderId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddTask(AddServiceTaskViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var task = new ServiceTask
+        {
+            Name = model.Name,
+            Description = model.Description,
+            LaborCost = model.LaborCost,
+            ServiceOrderId = model.ServiceOrderId
+        };
+
+        _context.ServiceTasks.Add(task);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Details", new { id = model.ServiceOrderId });
+    }
+
+
+
 
 }

@@ -1,0 +1,38 @@
+﻿@model AutoParts.Web.Data.Entities.ServiceOrder
+@using Microsoft.AspNetCore.Identity
+@using AutoParts.Web.Data.Entities
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Szczegóły zlecenia";
+}
+
+<h2>Szczegóły zlecenia</h2>
+
+<div class="card p-3 mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">Opis problemu</dt>
+        <dd class="col-sm-9">@Model.Description</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+
+        <dt class="col-sm-3">Mechanik</dt>
+        <dd class="col-sm-9">@Model.Mechanic?.FirstName @Model.Mechanic?.LastName</dd>
+
+        <dt class="col-sm-3">Klient</dt>
+        <dd class="col-sm-9">@Model.Customer?.FirstName @Model.Customer?.LastName</dd>
+
+        <dt class="col-sm-3">Pojazd</dt>
+        <dd class="col-sm-9">@Model.Vehicle?.Make @Model.Vehicle?.ModelName</dd>
+
+        <dt class="col-sm-3">Data zakończenia</dt>
+        <dd class="col-sm-9">@Model.EndDate?.ToString("yyyy-MM-dd") ?? "-"</dd>
+    </dl>
+
+    
+    <a asp-action="EditStatus" asp-route-id="@Model.Id" class="btn btn-warning">Zmień status</a>
+    
+
+    <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+</div>

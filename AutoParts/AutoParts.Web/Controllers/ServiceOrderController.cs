@@ -149,6 +149,7 @@ public async Task<IActionResult> Details(int? id)
         .Include(o => o.Mechanic)
         .Include(o => o.Tasks)
         .Include(o => o.Comments)
+        .ThenInclude(c => c.Author)
         .FirstOrDefaultAsync(o => o.Id == id);
 
     if (order == null)
@@ -158,6 +159,34 @@ public async Task<IActionResult> Details(int? id)
 
     return View(order);
 }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> AddComment(AddCommentViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Details", new { id = model.ServiceOrderId });
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Forbid();
+
+        var comment = new Comment
+        {
+            Text = model.Text,
+            CreatedAt = DateTime.Now,
+            AuthorId = user.Id,
+            ServiceOrderId = model.ServiceOrderId
+        };
+
+        _context.Comments.Add(comment);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Details", new { id = model.ServiceOrderId });
+    }
 
 
 }

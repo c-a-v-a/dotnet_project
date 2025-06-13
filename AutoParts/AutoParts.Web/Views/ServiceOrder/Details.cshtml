@@ -32,7 +32,42 @@
 
     
     <a asp-action="EditStatus" asp-route-id="@Model.Id" class="btn btn-warning">Zmień status</a>
-    
-
     <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+
+    <h4>Komentarze</h4>
+
+    @if (Model.Comments?.Any() == true)
+    {
+        <ul class="list-group mb-3">
+            @foreach (var comment in Model.Comments.OrderBy(c => c.CreatedAt))
+            {
+                <li class="list-group-item">
+                    <strong>@comment.Author?.FirstName @comment.Author?.LastName</strong>
+                    <span class="text-muted">(@comment.CreatedAt.ToString("g"))</span>
+                    <div>@comment.Text</div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">Brak komentarzy.</p>
+    }
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-action="AddComment" method="post">
+            <input type="hidden" name="ServiceOrderId" value="@Model.Id" />
+            <div class="mb-3">
+                <label for="Text" class="form-label">Dodaj komentarz</label>
+                <textarea class="form-control" name="Text" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Dodaj</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">Zaloguj się, aby dodać komentarz.</p>
+    }
+
 </div>

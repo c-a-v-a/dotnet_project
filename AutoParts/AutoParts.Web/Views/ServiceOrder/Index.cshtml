@@ -1,31 +1,68 @@
-﻿@model IEnumerable<AutoParts.Web.Data.Entities.ServiceOrder>
+﻿@model List<AutoParts.Web.Models.ServiceOrderModel>
 
 @{
-    ViewData["Title"] = "Lista zleceń";
+    ViewData["Title"] = "Order list";
 }
 
-<h2>Lista zleceń</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Opis</th>
-            <th>Status</th>
-            <th>Mechanik</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="my-auto">Order list</h4>
+        <a asp-controller="ServiceOrder" asp-action="Create" class="btn btn-primary my-auto">
+            <i class="fas fa-plus"></i> Add new Order
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered align-middle text-center">
+          <thead class="table-light">
             <tr>
-                <td>@item.Description</td>
-                <td>@item.Status</td>
-                <td>@item.Mechanic?.FirstName ?? "—"</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Szczegóły</a>
-                </td>
+              <th scope="col">Customer</th>
+              <th scope="col">Vehicle</th>
+              <th scope="col">Mechanic</th>
+              <th scope="col">Start Date</th>
+              <th scope="col">End Date</th>
+              <th scope="col">Details</th>
+              <th scope="col">Delete</th>
             </tr>
-        }
-    </tbody>
-</table>
+          </thead>
+          <tbody>
+            @foreach (var order in Model)
+            {
+              <tr scope="col">@order.Customer.FirstName @order.Customer.LastName</tr>
+              <tr scope="col">@order.Vehicle.Make @order.Vehicle.ModelName @order.Vehicle.Year</tr>
+              <tr scope="col">
+                  @if (order.MechanicId == null)
+                  {
+                      <p>---</p>
+                  }
+                  else
+                  {
+                    @order.Mechanic!.FirstName @order.Mechanic!.LastName
+                  }
+              </tr>
+              <tr scope="col">@order.StartDate</tr>
+              <tr scope="col">
+                  @if (order.EndDate == null)
+                  {
+                      <p>---</p>
+                  }
+                  else
+                  {
+                    @order.EndDate
+                  }
+              </tr>
+              <tr scope="col">
+                <a asp-action="Details" asp-route-id="@order.Id"
+                   class="btn btn-primary" title="Details">
+                    Details
+                </a>
+              </tr>
+              <tr scope="col">
+                  <form asp-action="Delete" method="post" asp-route-id="@order.Id" >
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+              </tr>
+            }
+          </tbody>
+        </table>
+    </div>
+</div>

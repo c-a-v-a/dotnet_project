@@ -35,6 +35,12 @@
                                class="btn btn-primary" title="Details">
                                 Details
                             </a>
+                            <a asp-controller="Customer"
+                               asp-action="ClientRepairReport"
+                               asp-route-customerId="@customer.Id"
+                               class="btn btn-outline-secondary">
+                                Report
+                            </a>
                         </td>
                     </tr>
                 }

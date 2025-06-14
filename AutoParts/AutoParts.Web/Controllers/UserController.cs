@@ -7,6 +7,7 @@ using AutoParts.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize(Policy = "RequiredAdminRole")]
 public class UserController : Controller
@@ -22,9 +23,9 @@ public class UserController : Controller
 
     // GET: /User/Index
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var users = _userManager.Users.ToList();
+        var users = await _userManager.Users.ToListAsync();
         var models = users.Select(user => _mapper.ToViewModel(user)).ToList();
         return View(models);
     }
@@ -52,7 +53,7 @@ public class UserController : Controller
         if (!result.Succeeded)
         {
             ModelState.AddModelError("", "Failed to update user role.");
-            var users = _userManager.Users.ToList();
+            var users = await _userManager.Users.ToListAsync();
             var models = users.Select(user => _mapper.ToViewModel(user)).ToList();
             return View("Index", models);
         }

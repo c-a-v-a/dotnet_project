@@ -7,6 +7,7 @@ using AutoParts.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize(Policy = "RequiredAdminOrReceptionistRole")]
 public class PartController : Controller
@@ -41,6 +42,7 @@ public class PartController : Controller
 
     // POST: /Part/Create
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PartModel model)
     {
         if (!ModelState.IsValid)
@@ -59,13 +61,14 @@ public class PartController : Controller
 
     // POST: /Part/Update
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(PartModel model)
     {
         if (!ModelState.IsValid)
         {
-            var parts = _context.Parts
+            var parts = await _context.Parts
                 .Select(part => _mapper.ToViewModel(part))
-                .ToList();
+                .ToListAsync();
 
             var index = parts.FindIndex(part => part.Id == model.Id);
 
@@ -94,9 +97,10 @@ public class PartController : Controller
 
     // POST: /Part/Delete?id=id
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var part = _context.Parts.Find(id);
+        var part = await _context.Parts.FindAsync(id);
 
         if (part != null)
         {

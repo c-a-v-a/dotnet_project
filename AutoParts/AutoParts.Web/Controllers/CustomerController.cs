@@ -25,14 +25,15 @@ public class CustomerController : Controller
 
     // GET: /Customer/Index
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var customers = _context.Customers.ToList();
+        var customers = await _context.Customers.ToListAsync();
         var models = customers.Select(customer => _mapper.ToViewModel(customer)).ToList();
         return View(models);
     }
 
     // GET: /Customer/Create
+    [HttpGet]
     public IActionResult Create()
     {
         return View();
@@ -83,6 +84,7 @@ public class CustomerController : Controller
     }
 
     // GET: /Customer/Details?id=id
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
         var customer = await _context.Customers
@@ -101,9 +103,10 @@ public class CustomerController : Controller
 
     // POST: /Customer/Delete?id=id
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var customer = _context.Customers.Find(id);
+        var customer = await _context.Customers.FindAsync(id);
 
         if (customer != null)
         {

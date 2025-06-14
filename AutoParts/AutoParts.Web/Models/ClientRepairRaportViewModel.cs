@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AutoParts.Web.Models
-{
+namespace AutoParts.Web.Models {
     public class ClientRepairReportViewModel
     {
         public int CustomerId { get; set; }

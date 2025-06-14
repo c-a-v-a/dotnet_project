@@ -25,11 +25,6 @@ public class ServiceOrder
     public DateTime? EndDate { get; set; }
 
     [Required]
-    public int CustomerId { get; set; }
-
-    public Customer Customer { get; set; } = default!;
-
-    [Required]
     public int VehicleId { get; set; }
 
     public Vehicle Vehicle { get; set; } = default!;

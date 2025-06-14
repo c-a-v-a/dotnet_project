@@ -23,15 +23,14 @@ public class ServiceOrderModel
 
     public DateTime? EndDate { get; set; }
 
-    [Required(ErrorMessage = "Order must be created for a given customer.")]
-    public int CustomerId { get; set; }
+    public int CustomerId { get; set; } = 0;
 
-    public CustomerShortDto Customer { get; set; } = null!;
+    public CustomerShortDto? Customer { get; set; } = null;
 
     [Required(ErrorMessage = "Order must be create for specific vehicle.")]
     public int VehicleId { get; set; }
 
-    public VehicleShortDto Vehicle { get; set; } = null!;
+    public VehicleShortDto? Vehicle { get; set; } = null;
 
     public string? MechanicId { get; set; }
 

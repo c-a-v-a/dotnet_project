@@ -27,9 +27,10 @@
           <tbody>
             @foreach (var order in Model)
             {
-              <tr scope="col">@order.Customer.FirstName @order.Customer.LastName</tr>
-              <tr scope="col">@order.Vehicle.Make @order.Vehicle.ModelName @order.Vehicle.Year</tr>
-              <tr scope="col">
+              <tr>
+              <td scope="col">@order.Customer.FirstName @order.Customer.LastName</td>
+              <td scope="col">@order.Vehicle.Make @order.Vehicle.ModelName @order.Vehicle.Year</td>
+              <td scope="col">
                   @if (order.MechanicId == null)
                   {
                       <p>---</p>
@@ -38,9 +39,9 @@
                   {
                     @order.Mechanic!.FirstName @order.Mechanic!.LastName
                   }
-              </tr>
-              <tr scope="col">@order.StartDate</tr>
-              <tr scope="col">
+              </td>
+              <td scope="col">@order.StartDate</td>
+              <td scope="col">
                   @if (order.EndDate == null)
                   {
                       <p>---</p>
@@ -49,17 +50,18 @@
                   {
                     @order.EndDate
                   }
-              </tr>
-              <tr scope="col">
+              </td>
+              <td scope="col">
                 <a asp-action="Details" asp-route-id="@order.Id"
                    class="btn btn-primary" title="Details">
                     Details
                 </a>
-              </tr>
-              <tr scope="col">
+              </td>
+              <td scope="col">
                   <form asp-action="Delete" method="post" asp-route-id="@order.Id" >
                       <button type="submit" class="btn btn-danger">Delete</button>
                   </form>
+              </td>
               </tr>
             }
           </tbody>

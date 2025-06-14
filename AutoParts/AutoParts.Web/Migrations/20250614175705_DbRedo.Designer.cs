@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoParts.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250609023304_ChangeVehicleModelRequired")]
-    partial class ChangeVehicleModelRequired
+    [Migration("20250614175705_DbRedo")]
+    partial class DbRedo
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,15 +37,16 @@ namespace AutoParts.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ServiceOrderId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -127,15 +128,26 @@ namespace AutoParts.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MechanicId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MechanicId");
+
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("ServiceOrders", (string)null);
                 });
@@ -150,12 +162,18 @@ namespace AutoParts.Web.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal>("LaborCost")
                         .HasColumnType("decimal(8,2)");
 
-                    b.Property<int?>("ServiceOrderId")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ServiceOrderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -288,6 +306,9 @@ namespace AutoParts.Web.Migrations
                     b.Property<int>("Fuel")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LicensePlate")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
@@ -297,7 +318,7 @@ namespace AutoParts.Web.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Model")
+                    b.Property<string>("ModelName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -478,14 +499,26 @@ namespace AutoParts.Web.Migrations
                         .WithMany("AssignedOrders")
                         .HasForeignKey("MechanicId");
 
+                    b.HasOne("AutoParts.Web.Data.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Mechanic");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.ServiceTask", b =>
                 {
-                    b.HasOne("AutoParts.Web.Data.Entities.ServiceOrder", null)
+                    b.HasOne("AutoParts.Web.Data.Entities.ServiceOrder", "ServiceOrder")
                         .WithMany("Tasks")
-                        .HasForeignKey("ServiceOrderId");
+                        .HasForeignKey("ServiceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceOrder");
                 });
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.UsedPart", b =>

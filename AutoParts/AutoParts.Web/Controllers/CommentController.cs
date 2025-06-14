@@ -47,14 +47,14 @@ public class CommentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Create(CommentModel model)
     {
+        model.CreatedAt = DateTime.Now;
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        model.CreatedAt = DateTime.Now;
-
-        await _context.Comments.AddAsync(_mapper.ToEntity(model));
+        _context.Comments.Add(_mapper.ToEntity(model));
         await _context.SaveChangesAsync();
 
         return RedirectToAction("Details", "ServiceOrder", new { id = model.ServiceOrderId });

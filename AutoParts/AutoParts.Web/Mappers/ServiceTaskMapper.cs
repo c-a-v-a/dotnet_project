@@ -10,6 +10,8 @@ public partial class ServiceTaskMapper
 {
     public partial ServiceTaskModel ToViewModel(ServiceTask serviceTask);
 
+    [MapperIgnoreTarget(nameof(ServiceTask.Id))]
+    [MapperIgnoreSource(nameof(ServiceTaskModel.Id))]
     public partial ServiceTask ToEntity(ServiceTaskModel model);
 
     public partial void ToEntity(ServiceTaskModel source, [MappingTarget] ServiceTask target);

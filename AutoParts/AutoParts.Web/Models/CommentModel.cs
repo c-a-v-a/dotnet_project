@@ -17,7 +17,7 @@ public class CommentModel
     [Required(ErrorMessage = "Comment needs to have an author.")]
     public required string AuthorId { get; set; }
 
-    public UserShortDto Author { get; set; } = null!;
+    public UserShortDto? Author { get; set; }
 
     [Required(ErrorMessage = "Comment needs to belong to an order.")]
     public required int ServiceOrderId { get; set; }

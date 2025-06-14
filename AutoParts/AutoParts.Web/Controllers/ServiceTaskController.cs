@@ -42,6 +42,8 @@ public class ServiceTaskController : Controller
             return View(model);
         }
 
+        Console.WriteLine(model.ServiceOrderId);
+
         _context.ServiceTasks.Add(_mapper.ToEntity(model));
         await _context.SaveChangesAsync();
 

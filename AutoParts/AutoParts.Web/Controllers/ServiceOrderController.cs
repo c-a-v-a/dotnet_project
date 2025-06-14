@@ -29,11 +29,26 @@ public class ServiceOrderController : Controller
     public async Task<IActionResult> Index()
     {
         var orders = await _context.ServiceOrders
-            .Include(o => o.Customer)
             .Include(o => o.Vehicle)
             .Include(o => o.Mechanic)
             .ToListAsync();
-        var models = orders.Select(order => _mapper.ToViewModel(order)).ToList();
+        var models = orders
+            .Select(order => {
+                var customer = _context.Customers.Find(order.Vehicle.CustomerId);
+
+                if (customer != null)
+                {
+                    var model = _mapper.ToViewModel(order);
+                    model.Customer = _mapper.ToShortDto(customer);
+                    model.CustomerId = customer.Id;
+
+                    return model;
+                }
+
+                return _mapper.ToViewModel(order);
+            })
+            .ToList();
+
 
         return View(models);
     }
@@ -47,7 +62,6 @@ public class ServiceOrderController : Controller
         }
 
         var order = await _context.ServiceOrders
-            .Include(o => o.Customer)
             .Include(o => o.Vehicle)
             .Include(o => o.Mechanic)
             .Include(o => o.Tasks)
@@ -82,6 +96,8 @@ public class ServiceOrderController : Controller
     public async Task<IActionResult> Create(ServiceOrderModel model)
     {
         var vehicle = await _context.Vehicles.FindAsync(model.VehicleId);
+        model.CustomerId = vehicle.CustomerId;
+        model.StartDate = DateTime.Now;
 
         if (!ModelState.IsValid || vehicle == null)
         {
@@ -93,9 +109,6 @@ public class ServiceOrderController : Controller
 
             return View(model);
         }
-
-        model.CustomerId = vehicle.CustomerId;
-        model.StartDate = DateTime.Now;
 
         var order = _mapper.ToEntity(model);
 

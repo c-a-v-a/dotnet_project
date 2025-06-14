@@ -1,4 +1,4 @@
-@model AutoParts.Web.Models.CustomerModel;
+@model AutoParts.Web.Models.ServiceOrderModel;
 @using AutoParts.Web.Enums;
 
 @{
@@ -14,7 +14,12 @@
             <input type="hidden" asp-for="Id" value="@Model.Id"/>
             <div class="mb-3 form-floating w-50">
                 <select asp-for="Status" class="form-control" placeholder="Status">
-                    @foreach (
+                    @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                    {
+                        <option value="@status" selected="@(Model.Status == status)">
+                            @status
+                        </option>
+                    }
                 </select>
                 <label asp-for="Status" class="form-label">First name</label>
                 <span asp-validation-for="Status" class="text-danger"></span>
@@ -24,17 +29,54 @@
 
         <h5>Customer: @Model.Customer.FirstName @Model.Customer.LastName</h5>
         <h5>Vehicle: @Model.Vehicle.Make @Model.Vehicle.ModelName @Model.Vehicle.Year</h5>
+
+        @if (Model.Mechanic != null)
+        {
         <h5>Mechanic: @Model.Mechanic.FirstName @Model.Mechanic.LastName</h5>
+        }
+        else
+        {
+        <h5>Mechanic: ---</h5>
+        }
 
         <hr>
 
         <h5>Tasks</h5>
-        <details>
-        </details>
+        @foreach (var task in Model.Tasks)
+        {
+            <details>
+                <summary>@task.Name</summary>
+                <div>
+                    <p>@task.Description</p>
+                    <h6>Parts</h6>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Unit price</th>
+                                <th>Total price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var usedPart in task.UsedParts)
+                            {
+                                <tr>
+                                    <td>@usedPart.Part!.Name</td>
+                                    <td>@usedPart.Quantity</td>
+                                    <td>@usedPart.Part.UnitPrice</td>
+                                    <td>@usedPart.TotalPrice</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <h6>Labor cost: @task.LaborCost</h6>
+                    <h6>Total: @task.TotalCost</h6>
+                </div>
+            </details>
+        }
 
         <h5>Comments</h5>
-        <details>
-        </details>
 
         <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="needs-validation w-100" onsubmit="return confirm('Are you sure you want to delete this part?');" novalidate>
             <button class="btn btn-danger w-50 mb-3" type="submit">Delete Order</button>

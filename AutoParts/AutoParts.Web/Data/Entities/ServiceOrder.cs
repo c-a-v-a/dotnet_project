@@ -1,18 +1,11 @@
 ﻿namespace AutoParts.Web.Data.Entities;
 
+using AutoParts.Web.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 public class ServiceOrder
 {
-    public enum OrderStatus
-    {
-        New,
-        InProgress,
-        Finished,
-        Cancelled
-    };
-
     public int Id { get; set; }
 
     [Required]
@@ -27,14 +20,18 @@ public class ServiceOrder
 
     public User? Mechanic { get; set; }
 
+    public DateTime? StartDate { get; set; }
+
     public DateTime? EndDate { get; set; }
 
     [Required]
     public int CustomerId { get; set; }
+
     public Customer Customer { get; set; } = default!;
 
     [Required]
     public int VehicleId { get; set; }
+
     public Vehicle Vehicle { get; set; } = default!;
 
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();

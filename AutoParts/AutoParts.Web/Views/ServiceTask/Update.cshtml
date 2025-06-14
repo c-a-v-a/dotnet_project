@@ -1,0 +1,33 @@
+﻿@model AutoParts.Web.Models.ServiceTaskModel;
+
+@{
+    ViewData["Title"] = "Update service task";
+}
+
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4>Update service task</h4>
+  </div>
+    <form asp-action="Update" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="Name" class="form-control" placeholder="Name" value="@Model.Name"/>
+            <label asp-for="Name" class="form-label">Name</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <textarea asp-for="Description" class="form-control w-100" style="height: 150px;" placeholder="Description"></textarea>
+            <label asp-for="Description" class="form-label">Description</label>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="LaborCost" class="form-control" type="number" step="0.01" placeholder="LaborCost" value="@Model.LaborCost"/>
+            <label asp-for="LaborCost" class="form-label">LaborCost</label>
+            <span asp-validation-for="LaborCost" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary align-self-center w-25" type="submit">Update service task</button>
+    </form>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

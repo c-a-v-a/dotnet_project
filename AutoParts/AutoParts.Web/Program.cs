@@ -33,12 +33,18 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, RoleHandler>();
 
-builder.Services.AddSingleton(new UserMapper());
-builder.Services.AddSingleton(new PartMapper());
+builder.Services.AddSingleton(new CommentMapper());
 builder.Services.AddSingleton(new CustomerMapper());
+builder.Services.AddSingleton(new PartMapper());
+builder.Services.AddSingleton(new ServiceOrderMapper());
+builder.Services.AddSingleton(new ServiceTaskMapper());
+builder.Services.AddSingleton(new UsedPartMapper());
+builder.Services.AddSingleton(new UserMapper());
 builder.Services.AddSingleton(new VehicleMapper());
 
 var app = builder.Build();
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 
 if (!app.Environment.IsDevelopment())

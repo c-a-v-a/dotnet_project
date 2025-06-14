@@ -10,16 +10,15 @@ public class UsedPart
     [Required]
     public int PartId { get; set; }
 
-    [Required]
     public Part Part { get; set; } = null!;
 
     [Required]
+    [Range(1, 100)]
     public int Quantity { get; set; }
 
     [Required]
     public int ServiceTaskId { get; set; }
 
-    [Required]
     public ServiceTask ServiceTask { get; set; } = null!;
 
     [NotMapped]

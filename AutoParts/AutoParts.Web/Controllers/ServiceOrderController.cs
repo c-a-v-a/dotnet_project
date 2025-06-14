@@ -63,6 +63,7 @@ public class ServiceOrderController : Controller
 
         var order = await _context.ServiceOrders
             .Include(o => o.Vehicle)
+            .ThenInclude(v => v.Customer)
             .Include(o => o.Mechanic)
             .Include(o => o.Tasks)
             .ThenInclude(t => t.UsedParts)
@@ -76,7 +77,18 @@ public class ServiceOrderController : Controller
             return NotFound();
         }
 
-        return View(_mapper.ToViewModel(order));
+        var vehicles = await _context.Vehicles.Include(vehicle => vehicle.Customer).ToListAsync();
+        var mechanics = await _userManager.Users.Where(user => user.Role == UserRole.Mechanic).ToListAsync();
+
+        ViewBag.Vehicles = vehicles;
+        ViewBag.Mechanics = mechanics;
+
+        var model = _mapper.ToViewModel(order);
+        model.CustomerId = order.Vehicle.CustomerId;
+        model.Customer = _mapper.ToShortDto(order.Vehicle.Customer);
+        model.Comments = model.Comments.OrderByDescending(comment => comment.CreatedAt).ToList();
+
+        return View(model);
     }
 
     [HttpGet]
@@ -130,6 +142,7 @@ public class ServiceOrderController : Controller
         }
 
         order.Status = model.Status;
+        order.MechanicId = model.MechanicId;
 
         if (model.Status == OrderStatus.Finished)
         {
@@ -144,9 +157,9 @@ public class ServiceOrderController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int serviceOrderId)
+    public async Task<IActionResult> Delete(int id)
     {
-        ServiceOrder? serviceOrder = await _context.ServiceOrders.FindAsync(serviceOrderId);
+        ServiceOrder? serviceOrder = await _context.ServiceOrders.FindAsync(id);
 
         if (serviceOrder != null)
         {

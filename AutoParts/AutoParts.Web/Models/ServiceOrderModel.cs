@@ -19,8 +19,10 @@ public class ServiceOrderModel
     [Required(ErrorMessage = "Order status is required.")]
     public OrderStatus Status { get; set; } = OrderStatus.New;
 
+    [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
     public DateTime? StartDate { get; set; }
 
+    [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
     public DateTime? EndDate { get; set; }
 
     public int CustomerId { get; set; } = 0;

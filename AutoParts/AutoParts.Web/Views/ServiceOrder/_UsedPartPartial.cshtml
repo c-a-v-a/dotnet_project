@@ -1,0 +1,15 @@
+@model AutoParts.Web.Models.UsedPartModel;
+
+<tr>
+    <td>@Model.Part!.Name</td>
+    <td>@Model.Quantity</td>
+    <td>@Model.Part.UnitPrice</td>
+    <td>@Model.TotalPrice</td>
+    <td><a class="btn btn-sm btn-primary" href="@Url.Action("Update", "UsedPart", new { usedPartId = Model.Id, serviceOrderId = ViewData["Id"]})">Edit</a></td>
+    <td>
+        <form asp-action="Delete" asp-controller="UsedPart" asp-route-id="@ViewData["Id"]" method="post">
+            <input type="hidden" name="serviceOrderId" value="@Model.Id" />
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+    </td>
+</tr>

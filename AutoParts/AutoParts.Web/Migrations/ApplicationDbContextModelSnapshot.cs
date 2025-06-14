@@ -34,15 +34,16 @@ namespace AutoParts.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ServiceOrderId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -120,9 +121,6 @@ namespace AutoParts.Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -133,6 +131,9 @@ namespace AutoParts.Web.Migrations
                     b.Property<string>("MechanicId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -140,8 +141,6 @@ namespace AutoParts.Web.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
 
                     b.HasIndex("MechanicId");
 
@@ -160,12 +159,18 @@ namespace AutoParts.Web.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal>("LaborCost")
                         .HasColumnType("decimal(8,2)");
 
-                    b.Property<int?>("ServiceOrderId")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ServiceOrderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -487,12 +492,6 @@ namespace AutoParts.Web.Migrations
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.ServiceOrder", b =>
                 {
-                    b.HasOne("AutoParts.Web.Data.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AutoParts.Web.Data.Entities.User", "Mechanic")
                         .WithMany("AssignedOrders")
                         .HasForeignKey("MechanicId");
@@ -503,8 +502,6 @@ namespace AutoParts.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
-
                     b.Navigation("Mechanic");
 
                     b.Navigation("Vehicle");
@@ -512,9 +509,13 @@ namespace AutoParts.Web.Migrations
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.ServiceTask", b =>
                 {
-                    b.HasOne("AutoParts.Web.Data.Entities.ServiceOrder", null)
+                    b.HasOne("AutoParts.Web.Data.Entities.ServiceOrder", "ServiceOrder")
                         .WithMany("Tasks")
-                        .HasForeignKey("ServiceOrderId");
+                        .HasForeignKey("ServiceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceOrder");
                 });
 
             modelBuilder.Entity("AutoParts.Web.Data.Entities.UsedPart", b =>

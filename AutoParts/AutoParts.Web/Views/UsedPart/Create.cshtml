@@ -11,6 +11,7 @@
   </div>
     <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
         <input type="hidden" name="serviceOrderId" value="@ViewBag.Order" />
+        <input type="hidden" asp-for="ServiceTaskId" value="@Model.ServiceTaskId" />
         <div class="mb-3 form-floating w-50">
             <select asp-for="PartId" class="form-control" placeholder="Type">
                 @foreach (Part part in ViewBag.Parts)

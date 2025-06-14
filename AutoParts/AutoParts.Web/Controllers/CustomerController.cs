@@ -187,7 +187,7 @@ public class CustomerController : Controller
             }).ToListAsync();
 
         IQueryable<ServiceOrder> query = _context.ServiceOrders
-            .Where(o => o.CustomerId == customerId)
+            .Where(o => o.Vehicle.CustomerId == customerId)
             .Include(o => o.Vehicle)
             .Include(o => o.Tasks)
                 .ThenInclude(t => t.UsedParts)

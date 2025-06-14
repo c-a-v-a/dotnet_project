@@ -18,6 +18,7 @@
               <th scope="col">Customer</th>
               <th scope="col">Vehicle</th>
               <th scope="col">Mechanic</th>
+              <th scope="col">Status</th>
               <th scope="col">Start Date</th>
               <th scope="col">End Date</th>
               <th scope="col">Details</th>
@@ -40,7 +41,8 @@
                     @order.Mechanic!.FirstName @order.Mechanic!.LastName
                   }
               </td>
-              <td scope="col">@order.StartDate</td>
+              <td scope="col">@order.Status</td>
+              <td scope="col">@Html.DisplayFor(_ => order.StartDate)</td>
               <td scope="col">
                   @if (order.EndDate == null)
                   {
@@ -48,7 +50,7 @@
                   }
                   else
                   {
-                    @order.EndDate
+                  @Html.DisplayFor(_ => order.EndDate);
                   }
               </td>
               <td scope="col">

@@ -45,20 +45,12 @@ public class UsedPartController : Controller
         if (!ModelState.IsValid)
         {
             var parts = await _context.Parts.ToListAsync();
-            ViewBag.Parts = new SelectList(parts, "Id", "Name");
+
+            ViewBag.Parts = parts;
+            ViewBag.Order = serviceOrderId;
+
             return View(model);
         }
-
-        Part? part = await _context.Parts.FindAsync(model.PartId);
-
-        if (part == null)
-        {
-            var parts = await _context.Parts.ToListAsync();
-            ViewBag.Parts = new SelectList(parts, "Id", "Name");
-            return View(model);
-        }
-
-        model.Part = _mapper.ToPartModel(part);
 
         _context.UsedParts.Add(_mapper.ToEntity(model));
         await _context.SaveChangesAsync();
@@ -78,7 +70,7 @@ public class UsedPartController : Controller
 
         var parts = await _context.Parts.ToListAsync();
 
-        ViewBag.Parts = new SelectList(parts, "Id", "Name");
+        ViewBag.Parts = parts;
         ViewBag.Order = serviceOrderId;
 
         var model = _mapper.ToViewModel(usedPart);
@@ -93,7 +85,10 @@ public class UsedPartController : Controller
         if (!ModelState.IsValid)
         {
             var parts = await _context.Parts.ToListAsync();
-            ViewBag.Parts = new SelectList(parts, "Id", "Name");
+
+            ViewBag.Parts = parts;
+            ViewBag.Order = serviceOrderId;
+
             return View(model);
         }
 
@@ -115,6 +110,8 @@ public class UsedPartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, int serviceOrderId)
     {
+        Console.WriteLine(id);
+        Console.WriteLine(serviceOrderId);
         var usedPart = _context.UsedParts.Find(id);
 
         if (usedPart != null)

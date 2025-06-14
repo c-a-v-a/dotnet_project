@@ -9,6 +9,8 @@
     <h4>Add comment</h4>
   </div>
     <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <input type="hidden" asp-for="AuthorId" value="@Model.AuthorId" />
+        <input type="hidden" asp-for="ServiceOrderId" value="@Model.ServiceOrderId" />
         <div class="mb-3 form-floating w-50">
             <textarea asp-for="Text" class="form-control w-100" style="height: 150px;" placeholder="Text"></textarea>
             <label asp-for="Text" class="form-label">Text</label>

@@ -1,0 +1,35 @@
+﻿@model AutoParts.Web.Models.UsedPartModel;
+@using AutoParts.Web.Data.Entities;
+
+@{
+    ViewData["Title"] = "Add used part";
+}
+
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4>Add used part</h4>
+  </div>
+    <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <input type="hidden" name="serviceOrderId" value="@ViewBag.Order" />
+        <div class="mb-3 form-floating w-50">
+            <select asp-for="PartId" class="form-control" placeholder="Type">
+                @foreach (Part part in ViewBag.Parts)
+                {
+                    <option value="@part.Id">@part.Name</option>
+                }
+            </select>
+            <label asp-for="PartId" class="form-label">Part</label>
+            <span asp-validation-for="PartId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <input asp-for="Quantity" class="form-control" type="number" placeholder="Quantity"/>
+            <label asp-for="Quantity" class="form-label">Quantity</label>
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary align-self-center w-25" type="submit">Add used part</button>
+    </form>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

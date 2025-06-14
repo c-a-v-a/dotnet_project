@@ -1,7 +1,7 @@
 ﻿namespace AutoParts.Web.Models;
 
-using System.ComponentModel.DataAnnotations;
 using AutoParts.Web.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 public class CustomerModel
 {

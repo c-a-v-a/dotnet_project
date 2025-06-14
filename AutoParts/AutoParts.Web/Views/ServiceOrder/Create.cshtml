@@ -1,29 +1,44 @@
-﻿@model CreateServiceOrderViewModel
+﻿@model AutoParts.Web.Models.ServiceOrderModel;
+@using AutoParts.Web.Data.Entities;
 
-<h2>Nowe zlecenie</h2>
+@{
+    ViewData["Title"] = "Add order";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="CustomerId">Klient</label>
-        <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control"></select>
-    </div>
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4>Add order</h4>
+  </div>
+    <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <div class="mb-3 form-floating w-50">
+            <select asp-for="VehicleId" class="form-control" placeholder="Type">
+                @foreach (var vehicle in ViewBag.Vehicles)
+                {
+                    <option value="@vehicle.Id">@vehicle.Customer.FirstName @vehicle.Customer.LastName - @vehicle.Make @vehicle.ModelName @vehicle.Year</option>
+                }
+            </select>
+            <label asp-for="VehicleId" class="form-label">Vehicle</label>
+            <span asp-validation-for="VehicleId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <select asp-for="MechanicId" class="form-control" placeholder="Type">
+                @foreach (var mechanic in ViewBag.Mechanics)
+                {
+                    <option value="@mechanic.Id">@mechanic.FirstName @mechanic.LastName</option>
+                }
+            </select>
+            <label asp-for="MechanicId" class="form-label">Mechanic</label>
+            <span asp-validation-for="MechanicId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 form-floating w-50">
+            <textarea asp-for="Description" class="form-control w-100" style="height: 150px;" placeholder="Description"></textarea>
+            <label asp-for="Description" class="form-label">Description</label>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary align-self-center w-25" type="submit">Add order</button>
+    </form>
+<dev>
 
-    <div class="form-group">
-        <label asp-for="VehicleId">Pojazd</label>
-        <select asp-for="VehicleId" asp-items="Model.Vehicles" class="form-control"></select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="MechanicId">Mechanik (opcjonalnie)</label>
-        <select asp-for="MechanicId" asp-items="Model.Mechanics" class="form-control">
-            <option value="">-- Nie przypisuj --</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Description">Opis problemu</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Utwórz zlecenie</button>
-</form>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

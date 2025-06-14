@@ -1,0 +1,23 @@
+﻿@model AutoParts.Web.Models.CommentModel;
+
+@{
+    ViewData["Title"] = "Add comment";
+}
+
+<dev class="card">
+  <div class="card-header d-flex justify-content-start align-items-center">
+    <h4>Add comment</h4>
+  </div>
+    <form asp-action="Create" method="post" class="needs-validation card-body d-flex flex-column justify-content-start align-items-center" novalidate>
+        <div class="mb-3 form-floating w-50">
+            <textarea asp-for="Text" class="form-control w-100" style="height: 150px;" placeholder="Text"></textarea>
+            <label asp-for="Text" class="form-label">Text</label>
+            <span asp-validation-for="Text" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary align-self-center w-25" type="submit">Add comment</button>
+    </form>
+<dev>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

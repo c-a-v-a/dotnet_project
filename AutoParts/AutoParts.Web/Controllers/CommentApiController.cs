@@ -46,7 +46,7 @@ public class CommentApiController : ControllerBase
 
         if (created == null)
         {
-            return BadRequest(new { Message = "Invalid service order id" } );
+            return BadRequest(new { Message = "Invalid service order id" });
         }
 
         return Ok(created);

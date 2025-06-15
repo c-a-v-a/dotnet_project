@@ -1,7 +1,5 @@
 ﻿namespace AutoParts.Web.Controllers;
 
-using Rotativa.AspNetCore.Options;
-using Rotativa.AspNetCore;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
@@ -10,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 
 [Authorize(Policy = "RequiredAdminOrReceptionistRole")]
 public class CustomerController : Controller

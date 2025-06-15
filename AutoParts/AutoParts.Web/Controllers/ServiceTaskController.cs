@@ -1,13 +1,15 @@
 ﻿namespace AutoParts.Web.Controllers;
 
+using System.Threading.Tasks;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
+using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 [Authorize]
@@ -15,16 +17,23 @@ public class ServiceTaskController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly ServiceTaskMapper _mapper;
+    private readonly UserManager<User> _userManager;
 
-    public ServiceTaskController(ApplicationDbContext context, ServiceTaskMapper mapper)
+    public ServiceTaskController(ApplicationDbContext context, ServiceTaskMapper mapper, UserManager<User> userManager)
     {
         _context = context;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
     [HttpGet]
-    public IActionResult Create(int serviceOrderId)
+    public async Task<IActionResult> Create(int serviceOrderId)
     {
+        if (await _VerifyOrder(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         var serviceTask = new ServiceTaskModel
         {
             ServiceOrderId = serviceOrderId
@@ -37,12 +46,15 @@ public class ServiceTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Create(ServiceTaskModel model)
     {
+        if (await _VerifyOrder(model.ServiceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
-
-        Console.WriteLine(model.ServiceOrderId);
 
         _context.ServiceTasks.Add(_mapper.ToEntity(model));
         await _context.SaveChangesAsync();
@@ -53,6 +65,11 @@ public class ServiceTaskController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int serviceTaskId)
     {
+        if (await _VerifyTask(serviceTaskId) == false)
+        {
+            return Forbid();
+        }
+
         var serviceTask = await _context.ServiceTasks.FindAsync(serviceTaskId);
 
         if (serviceTask == null)
@@ -69,6 +86,11 @@ public class ServiceTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(ServiceTaskModel model)
     {
+        if (await _VerifyOrder(model.ServiceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -92,15 +114,54 @@ public class ServiceTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, int serviceOrderId)
     {
-        var serviceTask = _context.ServiceTasks.Find(id);
-
-        if (serviceTask != null)
+        if (await _VerifyOrder(serviceOrderId) == false)
         {
-            _context.ServiceTasks.Remove(serviceTask);
-
-            await _context.SaveChangesAsync();
+            return Forbid();
         }
 
+        var serviceTask = await _context.ServiceTasks.FindAsync(id);
+
+        if (serviceTask == null)
+        {
+            return NotFound();
+        }
+
+        _context.ServiceTasks.Remove(serviceTask);
+        await _context.SaveChangesAsync();
+
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
+    }
+
+    private async Task<bool> _VerifyOrder(int serviceOrderId)
+    {
+        var serviceOrder = await _context.ServiceOrders.FindAsync(serviceOrderId);
+        var user = await _userManager.GetUserAsync(User);
+
+        if (serviceOrder == null || user == null || user.Role != UserRole.Admin && user.Id != serviceOrder.MechanicId)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<bool> _VerifyTask(int serviceTaskId)
+    {
+        var serviceTask = await _context.ServiceTasks.FindAsync(serviceTaskId);
+
+        if (serviceTask == null)
+        {
+            return false;
+        }
+
+        var serviceOrder = await _context.ServiceOrders.FindAsync(serviceTask.ServiceOrderId);
+        var user = await _userManager.GetUserAsync(User);
+
+        if (serviceOrder == null || user == null || user.Role != UserRole.Admin && user.Id != serviceOrder.MechanicId)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

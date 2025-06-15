@@ -4,6 +4,7 @@ using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,22 +15,21 @@ public class PartController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly PartMapper _mapper;
+    private readonly PartService _service;
 
-    public PartController(ApplicationDbContext context, PartMapper mapper)
+    public PartController(ApplicationDbContext context, PartMapper mapper, PartService service)
     {
         _context = context;
         _mapper = mapper;
+        _service = service;
     }
 
     // GET: /Part/Index
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var parts = _context.Parts.ToList();
-        var models = parts
-            .Select(part => _mapper.ToViewModel(part))
-            .OrderBy(part => part.Type)
-            .ToList();
+        List<PartModel> models = await _service.GetAllAsync();
+
         return View(models);
     }
 
@@ -50,11 +50,7 @@ public class PartController : Controller
             return View(model);
         }
 
-        Part part = _mapper.ToEntity(model);
-
-        _context.Parts.Add(part);
-
-        await _context.SaveChangesAsync();
+        await _service.CreateAsync(model);
 
         return RedirectToAction("Index");
     }
@@ -66,31 +62,24 @@ public class PartController : Controller
     {
         if (!ModelState.IsValid)
         {
-            var parts = await _context.Parts
-                .Select(part => _mapper.ToViewModel(part))
-                .ToListAsync();
+            List<PartModel> models = await _service.GetAllAsync();
 
-            var index = parts.FindIndex(part => part.Id == model.Id);
+            var index = models.FindIndex(part => part.Id == model.Id);
 
             if (index >= 0)
             {
-                parts[index] = model;
+                models[index] = model;
             }
 
-            return View("Index", parts);
+            return View("Index", models);
         }
 
-        Part? part = await _context.Parts.FindAsync(model.Id);
+        PartModel? updated = await _service.UpdateAsync(model);
 
-        if (part == null)
+        if (updated == null)
         {
             return NotFound();
         }
-
-        _mapper.ToEntity(model, part);
-        _context.Parts.Update(part);
-
-        await _context.SaveChangesAsync();
 
         return RedirectToAction("Index");
     }
@@ -100,14 +89,7 @@ public class PartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var part = await _context.Parts.FindAsync(id);
-
-        if (part != null)
-        {
-            _context.Parts.Remove(part);
-
-            await _context.SaveChangesAsync();
-        }
+        await _service.DeleteAsync(id);
 
         return RedirectToAction("Index");
     }

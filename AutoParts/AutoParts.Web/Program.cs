@@ -3,10 +3,13 @@ using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using AutoParts.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,9 +45,18 @@ builder.Services.AddSingleton(new UsedPartMapper());
 builder.Services.AddSingleton(new UserMapper());
 builder.Services.AddSingleton(new VehicleMapper());
 
+builder.Services.AddHostedService<OpenOrderReportBackgroundService>();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+builder.Services.Configure<ReportEmailSettings>(
+    builder.Configuration.GetSection("ReportEmail"));
+
 var app = builder.Build();
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
+
+
+
 
 
 if (!app.Environment.IsDevelopment())

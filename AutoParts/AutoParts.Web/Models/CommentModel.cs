@@ -14,8 +14,7 @@ public class CommentModel
     [Required(ErrorMessage = "Creation date is required")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-    [Required(ErrorMessage = "Comment needs to have an author.")]
-    public required string AuthorId { get; set; }
+    public string? AuthorId { get; set; }
 
     public UserShortDto? Author { get; set; }
 

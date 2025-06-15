@@ -1,7 +1,7 @@
 ﻿namespace AutoParts.Web.Data.Entities;
 
-using AutoParts.Web.Enums;
 using System.ComponentModel.DataAnnotations;
+using AutoParts.Web.Enums;
 
 public class Vehicle
 {

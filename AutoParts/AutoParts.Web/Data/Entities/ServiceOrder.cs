@@ -1,8 +1,8 @@
 ﻿namespace AutoParts.Web.Data.Entities;
 
-using AutoParts.Web.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AutoParts.Web.Enums;
 
 public class ServiceOrder
 {

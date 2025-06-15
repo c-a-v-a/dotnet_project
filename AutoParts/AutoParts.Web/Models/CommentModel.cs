@@ -1,7 +1,7 @@
 ﻿namespace AutoParts.Web.Models;
 
-using AutoParts.Web.DTOs;
 using System.ComponentModel.DataAnnotations;
+using AutoParts.Web.DTOs;
 
 public class CommentModel
 {

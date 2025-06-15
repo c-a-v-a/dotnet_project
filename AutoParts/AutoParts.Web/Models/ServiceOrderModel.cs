@@ -1,9 +1,9 @@
 ﻿namespace AutoParts.Web.Models;
 
-using AutoParts.Web.DTOs;
-using AutoParts.Web.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AutoParts.Web.DTOs;
+using AutoParts.Web.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 public class ServiceOrderModel

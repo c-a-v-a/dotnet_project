@@ -1,7 +1,19 @@
 ﻿@model List<AutoParts.Web.Models.ServiceOrderModel>
+@using AutoParts.Web.Data.Entities
+@using AutoParts.Web.Enums
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 @{
     ViewData["Title"] = "Order list";
+
+    User? currentUser = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        currentUser = await UserManager.GetUserAsync(User);
+    }
 }
 
 <div class="card">
@@ -22,15 +34,18 @@
               <th scope="col">Start Date</th>
               <th scope="col">End Date</th>
               <th scope="col">Details</th>
-              <th scope="col">Delete</th>
+              @if (currentUser != null && currentUser.Role == UserRole.Admin)
+              {
+                  <th scope="col">Delete</th>
+              }
             </tr>
           </thead>
           <tbody>
             @foreach (var order in Model)
             {
               <tr>
-              <td scope="col">@order.Customer.FirstName @order.Customer.LastName</td>
-              <td scope="col">@order.Vehicle.Make @order.Vehicle.ModelName @order.Vehicle.Year</td>
+              <td scope="col">@order.Customer!.FirstName @order.Customer!.LastName</td>
+              <td scope="col">@order.Vehicle!.Make @order.Vehicle!.ModelName @order.Vehicle!.Year</td>
               <td scope="col">
                   @if (order.MechanicId == null)
                   {
@@ -59,11 +74,14 @@
                     Details
                 </a>
               </td>
+              @if (currentUser != null && currentUser.Role == UserRole.Admin)
+              {
               <td scope="col">
                   <form asp-action="Delete" method="post" asp-route-id="@order.Id" >
                       <button type="submit" class="btn btn-danger">Delete</button>
                   </form>
               </td>
+              }
               </tr>
             }
           </tbody>

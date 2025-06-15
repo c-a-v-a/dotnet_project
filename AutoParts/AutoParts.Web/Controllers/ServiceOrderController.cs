@@ -33,7 +33,8 @@ public class ServiceOrderController : Controller
             .Include(o => o.Mechanic)
             .ToListAsync();
         var models = orders
-            .Select(order => {
+            .Select(order =>
+            {
                 var customer = _context.Customers.Find(order.Vehicle.CustomerId);
 
                 if (customer != null)
@@ -85,7 +86,7 @@ public class ServiceOrderController : Controller
 
         var model = _mapper.ToViewModel(order);
         model.CustomerId = order.Vehicle.CustomerId;
-        model.Customer = _mapper.ToShortDto(order.Vehicle.Customer);
+        model.Customer = _mapper.ToShortDto(order.Vehicle.Customer!);
         model.Comments = model.Comments.OrderByDescending(comment => comment.CreatedAt).ToList();
 
         return View(model);
@@ -108,6 +109,12 @@ public class ServiceOrderController : Controller
     public async Task<IActionResult> Create(ServiceOrderModel model)
     {
         var vehicle = await _context.Vehicles.FindAsync(model.VehicleId);
+
+        if (vehicle == null)
+        {
+            return NotFound();
+        }
+
         model.CustomerId = vehicle.CustomerId;
         model.StartDate = DateTime.Now;
 
@@ -141,6 +148,13 @@ public class ServiceOrderController : Controller
             return NotFound();
         }
 
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null || user.Role != UserRole.Admin && user.Id != model.MechanicId)
+        {
+            return Forbid();
+        }
+
         order.Status = model.Status;
         order.MechanicId = model.MechanicId;
 
@@ -157,6 +171,7 @@ public class ServiceOrderController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Policy = "RequiredAdminRole")]
     public async Task<IActionResult> Delete(int id)
     {
         ServiceOrder? serviceOrder = await _context.ServiceOrders.FindAsync(id);

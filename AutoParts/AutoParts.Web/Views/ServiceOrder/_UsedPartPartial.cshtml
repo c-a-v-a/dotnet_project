@@ -1,15 +1,33 @@
 @model AutoParts.Web.Models.UsedPartModel;
+@using AutoParts.Web.Enums;
+@using AutoParts.Web.Data.Entities;
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    string mechanicId = ViewData["Mechanic"] as string ?? "";
+    User? currentUser = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        currentUser = await UserManager.GetUserAsync(User);
+    }
+}
 
 <tr>
     <td>@Model.Part!.Name</td>
     <td>@Model.Quantity</td>
     <td>@Model.Part.UnitPrice</td>
     <td>@Model.TotalPrice</td>
-    <td><a class="btn btn-sm btn-primary" href="@Url.Action("Update", "UsedPart", new { usedPartId = Model.Id, serviceOrderId = ViewData["Id"]})">Edit</a></td>
-    <td>
-        <form asp-action="Delete" asp-controller="UsedPart" asp-route-id="@ViewData["Id"]" method="post">
-            <input type="hidden" name="serviceOrderId" value="@Model.Id" />
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-        </form>
-    </td>
+    @if (currentUser != null && (currentUser.Role == UserRole.Admin || currentUser.Id == mechanicId))
+    {
+        <td><a class="btn btn-sm btn-primary" href="@Url.Action("Update", "UsedPart", new { usedPartId = Model.Id, serviceOrderId = ViewData["Id"]})">Edit</a></td>
+        <td>
+            <form asp-action="Delete" asp-controller="UsedPart" asp-route-id="@Model.Id" method="post">
+                <input type="hidden" name="serviceOrderId" value="@ViewData["Id"]" />
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+        </td>
+    }
 </tr>

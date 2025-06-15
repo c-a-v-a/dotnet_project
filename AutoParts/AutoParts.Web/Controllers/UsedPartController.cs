@@ -1,7 +1,7 @@
 ﻿namespace AutoParts.Web.Controllers;
 
-using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Data;
+using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
@@ -11,20 +11,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize]
 public class UsedPartController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UsedPartMapper _mapper;
+    private readonly UserManager<User> _userManager;
 
-    public UsedPartController(ApplicationDbContext context, UsedPartMapper mapper)
+    public UsedPartController(ApplicationDbContext context, UsedPartMapper mapper, UserManager<User> userManager)
     {
         _context = context;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
     [HttpGet]
     public async Task<IActionResult> Create(int serviceTaskId, int serviceOrderId)
     {
+        if (await _Verify(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         var parts = await _context.Parts.ToListAsync();
 
         ViewBag.Parts = parts;
@@ -42,6 +50,11 @@ public class UsedPartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Create(UsedPartModel model, int serviceOrderId)
     {
+        if (await _Verify(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         if (!ModelState.IsValid)
         {
             var parts = await _context.Parts.ToListAsync();
@@ -61,6 +74,11 @@ public class UsedPartController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int usedPartId, int serviceOrderId)
     {
+        if (await _Verify(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         var usedPart = await _context.UsedParts.FindAsync(usedPartId);
 
         if (usedPart == null)
@@ -82,6 +100,11 @@ public class UsedPartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(UsedPartModel model, int serviceOrderId)
     {
+        if (await _Verify(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         if (!ModelState.IsValid)
         {
             var parts = await _context.Parts.ToListAsync();
@@ -110,8 +133,11 @@ public class UsedPartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, int serviceOrderId)
     {
-        Console.WriteLine(id);
-        Console.WriteLine(serviceOrderId);
+        if (await _Verify(serviceOrderId) == false)
+        {
+            return Forbid();
+        }
+
         var usedPart = _context.UsedParts.Find(id);
 
         if (usedPart != null)
@@ -122,5 +148,18 @@ public class UsedPartController : Controller
         }
 
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
+    }
+
+    private async Task<bool> _Verify(int serviceOrderId)
+    {
+        var serviceOrder = await _context.ServiceOrders.FindAsync(serviceOrderId);
+        var user = await _userManager.GetUserAsync(User);
+
+        if (serviceOrder == null || user == null || user.Role != UserRole.Admin && user.Id != serviceOrder.MechanicId)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

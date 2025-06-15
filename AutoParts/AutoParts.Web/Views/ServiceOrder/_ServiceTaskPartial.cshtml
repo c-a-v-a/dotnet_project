@@ -1,0 +1,58 @@
+@model AutoParts.Web.Models.ServiceTaskModel;
+@using AutoParts.Web.Enums;
+@using AutoParts.Web.Data.Entities;
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    string mechanicId = ViewData["Mechanic"] as string ?? "";
+    User? currentUser = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        currentUser = await UserManager.GetUserAsync(User);
+    }
+}
+
+<details class="mx-2 w-50 border-secondary bg-light p-3">
+    <summary class="fw-bold">@Model.Name</summary>
+    <div class="w-100">
+        <p>Description: @Model.Description</p>
+        <p>Labor cost: @Model.LaborCost</p>
+        <p>Total: @Model.TotalCost</p>
+
+        <h6 class="fw-bold mt-2">Parts<h6>
+        <table class="table table-bordered align-middle text-center w-100">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Unit price</th>
+                    <th>Total price</th>
+                    @if (currentUser != null && (currentUser.Role == UserRole.Admin || currentUser.Id == mechanicId))
+                    {
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var usedPart in Model.UsedParts)
+                {
+                <partial name="_UsedPartPartial", model="usedPart", view-data='new ViewDataDictionary(ViewData){ { "Id", Model.ServiceOrderId } }' />
+                }
+            </tbody>
+        </table>
+
+        @if (currentUser != null && (currentUser.Role == UserRole.Admin || currentUser.Id == mechanicId))
+        {
+            <a href="@Url.Action("Create", "UsedPart", new { serviceTaskId = Model.Id, serviceOrderId = Model.ServiceOrderId} )" class="btn btn-primary" title="Add task">Add parts</a>
+            <form asp-action="Delete" asp-controller="ServiceTask" asp-route-id="@Model.Id" method="post">
+                <input type="hidden" name="serviceOrderId" value="@Model.ServiceOrderId" />
+                <button type="submit" class="btn btn-danger mt-2">Delete Task</button>
+            </form>
+        }
+
+    </div>
+</details>

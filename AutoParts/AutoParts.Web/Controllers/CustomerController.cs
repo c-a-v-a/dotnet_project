@@ -4,6 +4,7 @@ using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,19 +17,21 @@ public class CustomerController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly CustomerMapper _mapper;
+    private readonly CustomerService _service;
 
-    public CustomerController(ApplicationDbContext context, CustomerMapper mapper)
+    public CustomerController(ApplicationDbContext context, CustomerMapper mapper, CustomerService service)
     {
         _context = context;
         _mapper = mapper;
+        _service = service;
     }
 
     // GET: /Customer/Index
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var customers = await _context.Customers.ToListAsync();
-        var models = customers.Select(customer => _mapper.ToViewModel(customer)).ToList();
+        List<CustomerModel> models = await _service.GetAllAsync();
+
         return View(models);
     }
 
@@ -49,11 +52,7 @@ public class CustomerController : Controller
             return View(model);
         }
 
-        Customer customer = _mapper.ToEntity(model);
-
-        _context.Customers.Add(customer);
-
-        await _context.SaveChangesAsync();
+        await _service.CreateAsync(model);
 
         return RedirectToAction(nameof(Index));
     }
@@ -68,17 +67,12 @@ public class CustomerController : Controller
             return View(model);
         }
 
-        Customer? customer = await _context.Customers.FindAsync(model.Id);
+        CustomerModel? updated = await _service.UpdateAsync(model);
 
-        if (customer == null)
+        if (updated == null)
         {
             return NotFound();
         }
-
-        _mapper.ToEntity(model, customer);
-        _context.Customers.Update(customer);
-
-        await _context.SaveChangesAsync();
 
         return RedirectToAction("Index");
     }
@@ -87,16 +81,12 @@ public class CustomerController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var customer = await _context.Customers
-            .Include(c => c.Vehicles)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        CustomerModel? model = await _service.GetAsync(id);
 
-        if (customer == null)
+        if (model == null)
         {
             return NotFound();
         }
-
-        var model = _mapper.ToViewModel(customer);
 
         return View(model);
     }
@@ -106,14 +96,7 @@ public class CustomerController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var customer = await _context.Customers.FindAsync(id);
-
-        if (customer != null)
-        {
-            _context.Customers.Remove(customer);
-
-            await _context.SaveChangesAsync();
-        }
+        await _service.DeleteAsync(id);
 
         return RedirectToAction("Index");
     }

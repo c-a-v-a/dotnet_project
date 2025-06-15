@@ -27,7 +27,6 @@ public class CommentServiceTests
 
         _context = new ApplicationDbContext(options);
 
-        // Seed a ServiceOrder for tests
         _context.ServiceOrders.Add(new ServiceOrder { Id = 1 });
         _context.SaveChanges();
 
@@ -40,7 +39,7 @@ public class CommentServiceTests
         });
         _context.SaveChanges();
 
-        _mapper = new CommentMapper(); // Real mapper instance
+        _mapper = new CommentMapper();
 
         _service = new CommentService(_context, _mapper);
     }
@@ -55,7 +54,6 @@ public class CommentServiceTests
     [Test]
     public async Task CreateAsync_WithValidServiceOrder_CreatesCommentAndReturnsModel()
     {
-        // Arrange
         var commentModel = new CommentModel
         {
             Text = "Test comment",
@@ -63,10 +61,8 @@ public class CommentServiceTests
             AuthorId = "author1"
         };
 
-        // Act
         var result = await _service.CreateAsync(commentModel);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Id, Is.GreaterThan(0));
         Assert.That(result.AuthorId, Is.EqualTo("author1"));
@@ -85,7 +81,6 @@ public class CommentServiceTests
     [Test]
     public async Task CreateAsync_WithInvalidServiceOrder_ReturnsNull()
     {
-        // Arrange
         var commentModel = new CommentModel
         {
             Text = "Test comment",
@@ -93,10 +88,8 @@ public class CommentServiceTests
             AuthorId = "author1"
         };
 
-        // Act
         var result = await _service.CreateAsync(commentModel);
 
-        // Assert
         Assert.That(result, Is.Null);
     }
 }

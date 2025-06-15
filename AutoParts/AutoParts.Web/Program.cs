@@ -1,4 +1,5 @@
-﻿using AutoParts.Web.Authorization;
+﻿using System.Text;
+using AutoParts.Web.Authorization;
 using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +63,7 @@ builder.Services.AddSingleton(new VehicleMapper());
 
 // Services
 builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<CustomerService>();
 
 var app = builder.Build();
 

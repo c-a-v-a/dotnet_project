@@ -5,12 +5,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoParts.Web.Data.Entities;
+using AutoParts.Web.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using AutoParts.Web.Data.Entities;
-using AutoParts.Web.DTOs;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
 
-    public AuthController (UserManager <User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;

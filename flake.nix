@@ -22,6 +22,10 @@
               postman
               tree
 	      wkhtmltopdf
+	      google-chrome
+	      ncpamixer
+	      vscode
+	      git-filter-repo
             ];
           };
         }

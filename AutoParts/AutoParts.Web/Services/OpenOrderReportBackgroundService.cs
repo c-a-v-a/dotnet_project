@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
-using MimeKit;
+﻿using AutoParts.Web.Configuration;
 using MailKit.Net.Smtp;
-using AutoParts.Web.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace AutoParts.Web.Services
 {

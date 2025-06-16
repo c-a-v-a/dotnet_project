@@ -33,6 +33,8 @@ public class CommentService
         _context.Comments.Add(entity);
         await _context.SaveChangesAsync();
 
+        await _context.Entry(entity).Reference(comment => comment.Author).LoadAsync();
+
         model.AuthorId = entity.AuthorId;
         model.Author = _mapper.ToShortDto(entity.Author);
         model.Id = entity.Id;

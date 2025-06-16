@@ -12,6 +12,12 @@ public partial class ServiceOrderMapper
 
     public partial ServiceOrder ToEntity(ServiceOrderModel model);
 
+    [MapperIgnoreTarget(nameof(ServiceOrder.Comments))]
+    [MapperIgnoreSource(nameof(ServiceOrderModel.Comments))]
+    [MapperIgnoreTarget(nameof(ServiceOrder.Tasks))]
+    [MapperIgnoreSource(nameof(ServiceOrderModel.Tasks))]
+    [MapperIgnoreTarget(nameof(ServiceOrder.Vehicle))]
+    [MapperIgnoreSource(nameof(ServiceOrderModel.Vehicle))]
     public partial void ToEntity(ServiceOrderModel source, [MappingTarget] ServiceOrder target);
 
     public partial VehicleShortDto ToShortDto(Vehicle vehicle);

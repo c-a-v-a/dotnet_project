@@ -45,6 +45,7 @@
                 <input type="hidden" asp-for="VehicleId" value="@Model.VehicleId"/>
                 <input type="hidden" asp-for="MechanicId" value="@Model.MechanicId"/>
                 <input type="hidden" asp-for="Description" value="@Model.Description"/>
+                <input type="hidden" asp-for="StartDate" value="@Model.StartDate"/>
                 <div class="mb-3 form-floating w-50">
                     <select asp-for="MechanicId" class="form-control" placeholder="Mechanic" disabled="@(Model.Status == OrderStatus.Finished)">
                         @foreach (var mechanic in ViewBag.Mechanics)

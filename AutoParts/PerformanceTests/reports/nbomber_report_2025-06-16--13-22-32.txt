@@ -1,10 +1,10 @@
 test info
 test suite: nbomber_default_test_suite_name
 test name: nbomber_default_test_name
-session id: 2025-06-16_05.04.57_session_a18946fd
+session id: 2025-06-16_13.22.54_session_530895a9
 
 scenario: GetActiveOrders
-  - ok count: 624153
+  - ok count: 616952
   - fail count: 0
   - all data: 0 MB
   - duration: 00:00:20
@@ -17,10 +17,10 @@ load simulations:
 +-------------------------+-----------------------------------------------------+
 | name                    | global information                                  |
 +-------------------------+-----------------------------------------------------+
-| request count           | all = 624153, ok = 624153, RPS = 31207.6            |
+| request count           | all = 616952, ok = 616952, RPS = 30847.6            |
 +-------------------------+-----------------------------------------------------+
-| latency (ms)            | min = 0.12, mean = 1.56, max = 47.96, StdDev = 0.88 |
+| latency (ms)            | min = 0.12, mean = 1.58, max = 33.07, StdDev = 0.89 |
 +-------------------------+-----------------------------------------------------+
-| latency percentile (ms) | p50 = 1.36, p75 = 1.8, p95 = 3.05, p99 = 4.95       |
+| latency percentile (ms) | p50 = 1.4, p75 = 1.81, p95 = 3.02, p99 = 5.02       |
 +-------------------------+-----------------------------------------------------+
 

@@ -5,6 +5,7 @@ using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,16 @@ using Microsoft.EntityFrameworkCore;
 public class UsedPartController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly UsedPartService _service;
     private readonly UsedPartMapper _mapper;
     private readonly UserManager<User> _userManager;
 
-    public UsedPartController(ApplicationDbContext context, UsedPartMapper mapper, UserManager<User> userManager)
+    public UsedPartController(ApplicationDbContext context, UsedPartService service, UsedPartMapper mapper, UserManager<User> userManager)
     {
         _context = context;
-        _mapper = mapper;
+        _service = service;
         _userManager = userManager;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -65,8 +68,7 @@ public class UsedPartController : Controller
             return View(model);
         }
 
-        _context.UsedParts.Add(_mapper.ToEntity(model));
-        await _context.SaveChangesAsync();
+        await _service.CreateAsync(model);
 
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
     }
@@ -115,16 +117,12 @@ public class UsedPartController : Controller
             return View(model);
         }
 
-        var usedPart = await _context.UsedParts.FindAsync(model.Id);
+        UsedPartModel? updated = await _service.UpdateAsync(model);
 
-        if (usedPart == null)
+        if (updated == null)
         {
             return NotFound();
         }
-
-        _mapper.ToEntity(model, usedPart);
-        _context.UsedParts.Update(usedPart);
-        await _context.SaveChangesAsync();
 
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
     }
@@ -138,14 +136,7 @@ public class UsedPartController : Controller
             return Forbid();
         }
 
-        var usedPart = _context.UsedParts.Find(id);
-
-        if (usedPart != null)
-        {
-            _context.UsedParts.Remove(usedPart);
-
-            await _context.SaveChangesAsync();
-        }
+        await _service.DeleteAsync(id);
 
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
     }

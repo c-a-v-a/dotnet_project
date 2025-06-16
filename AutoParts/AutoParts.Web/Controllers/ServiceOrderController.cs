@@ -5,6 +5,7 @@ using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,64 +18,30 @@ public class ServiceOrderController : Controller
     private readonly ApplicationDbContext _context;
     private readonly ServiceOrderMapper _mapper;
     private readonly UserManager<User> _userManager;
+    private readonly ServiceOrderService _service;
 
-    public ServiceOrderController(ApplicationDbContext context, UserManager<User> userManager, ServiceOrderMapper mapper)
+    public ServiceOrderController(ApplicationDbContext context, UserManager<User> userManager, ServiceOrderMapper mapper, ServiceOrderService service)
     {
         _context = context;
         _mapper = mapper;
         _userManager = userManager;
+        _service = service;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var orders = await _context.ServiceOrders
-            .Include(o => o.Vehicle)
-            .ThenInclude(v => v.Customer)
-            .Include(o => o.Mechanic)
-            .ToListAsync();
-        var models = orders
-            .Select(order =>
-            {
-                var customer = _context.Customers.Find(order.Vehicle.CustomerId);
-
-                if (customer != null)
-                {
-                    var model = _mapper.ToViewModel(order);
-                    model.Customer = _mapper.ToShortDto(customer);
-                    model.CustomerId = customer.Id;
-
-                    return model;
-                }
-
-                return _mapper.ToViewModel(order);
-            })
-            .ToList();
-
+        List<ServiceOrderModel> models = await _service.GetAllAsync();
 
         return View(models);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(int id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        ServiceOrderModel? model = await _service.GetAsync(id);
 
-        var order = await _context.ServiceOrders
-            .Include(o => o.Vehicle)
-            .ThenInclude(v => v.Customer)
-            .Include(o => o.Mechanic)
-            .Include(o => o.Tasks)
-            .ThenInclude(t => t.UsedParts)
-            .ThenInclude(p => p.Part)
-            .Include(o => o.Comments)
-            .ThenInclude(c => c.Author)
-            .FirstOrDefaultAsync(o => o.Id == id);
-
-        if (order == null)
+        if (model == null)
         {
             return NotFound();
         }
@@ -85,9 +52,6 @@ public class ServiceOrderController : Controller
         ViewBag.Vehicles = vehicles;
         ViewBag.Mechanics = mechanics;
 
-        var model = _mapper.ToViewModel(order);
-        model.CustomerId = order.Vehicle.CustomerId;
-        model.Customer = _mapper.ToShortDto(order.Vehicle.Customer!);
         model.Comments = model.Comments.OrderByDescending(comment => comment.CreatedAt).ToList();
 
         return View(model);
@@ -130,10 +94,18 @@ public class ServiceOrderController : Controller
             return View(model);
         }
 
-        var order = _mapper.ToEntity(model);
+        ServiceOrderModel? created = await _service.CreateAsync(model);
 
-        _context.ServiceOrders.Add(order);
-        await _context.SaveChangesAsync();
+        if (created == null)
+        {
+            var vehicles = await _context.Vehicles.Include(vehicle => vehicle.Customer).ToListAsync();
+            var mechanics = await _userManager.Users.Where(user => user.Role == UserRole.Mechanic).ToListAsync();
+
+            ViewBag.Vehicles = vehicles;
+            ViewBag.Mechanics = mechanics;
+
+            return View(model);
+        }
 
         return RedirectToAction("Index", "ServiceOrder"); // lub inny widok
     }
@@ -156,16 +128,11 @@ public class ServiceOrderController : Controller
             return Forbid();
         }
 
-        order.Status = model.Status;
-        order.MechanicId = model.MechanicId;
+        model.Vehicle = null;
+        model.Mechanic = null;
+        model.Customer = null;
 
-        if (model.Status == OrderStatus.Finished)
-        {
-            order.EndDate = DateTime.Now;
-        }
-
-        _context.ServiceOrders.Update(order);
-        await _context.SaveChangesAsync();
+        await _service.UpdateAsync(model);
 
         return RedirectToAction("Details", new { id = model.Id });
     }
@@ -175,14 +142,7 @@ public class ServiceOrderController : Controller
     [Authorize(Policy = "RequiredAdminRole")]
     public async Task<IActionResult> Delete(int id)
     {
-        ServiceOrder? serviceOrder = await _context.ServiceOrders.FindAsync(id);
-
-        if (serviceOrder != null)
-        {
-            _context.ServiceOrders.Remove(serviceOrder);
-
-            await _context.SaveChangesAsync();
-        }
+        await _service.DeleteAsync(id);
 
         return RedirectToAction("Index");
     }

@@ -5,6 +5,7 @@ using AutoParts.Web.Data;
 using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -14,31 +15,20 @@ using Microsoft.EntityFrameworkCore;
 [Authorize(Policy = "RequiredAdminOrReceptionistRole")]
 public class VehicleController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly VehicleService _service;
     private readonly IWebHostEnvironment _environment;
-    private readonly VehicleMapper _mapper;
 
-    public VehicleController(ApplicationDbContext context, VehicleMapper mapper, IWebHostEnvironment environment)
+    public VehicleController(VehicleService service, IWebHostEnvironment environment)
     {
-        _context = context;
+        _service = service;
         _environment = environment;
-        _mapper = mapper;
     }
 
     // GET: /Vehicle/Details?id=id
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var vehicle = await _context.Vehicles
-            .Include(v => v.Customer)
-            .FirstOrDefaultAsync(v => v.Id == id);
-
-        if (vehicle == null)
-        {
-            return NotFound();
-        }
-
-        var model = _mapper.ToViewModel(vehicle);
+        VehicleModel model = await _service.GetAsync(id);
 
         return View(model);
     }
@@ -64,17 +54,12 @@ public class VehicleController : Controller
             return View(vehicleModel);
         }
 
-        Vehicle vehicle = _mapper.ToEntity(vehicleModel);
-        vehicle.Id = 0;
-
         if (ImageFile != null)
         {
-            vehicle.ImageUrl = await SaveImage(ImageFile);
+            vehicleModel.ImageUrl = await SaveImage(ImageFile);
         }
 
-        _context.Vehicles.Add(vehicle);
-
-        await _context.SaveChangesAsync();
+        await _service.CreateAsync(vehicleModel);
 
         return RedirectToAction("Details", "Customer", new { id = vehicleModel.CustomerId });
     }
@@ -89,25 +74,29 @@ public class VehicleController : Controller
             return View("Details", model);
         }
 
-        Vehicle? vehicle = await _context.Vehicles.FindAsync(model.Id);
+        if (ImageFile != null)
+        {
+            model.ImageUrl = await SaveImage(ImageFile);
+        }
 
-        if (vehicle == null)
+        VehicleModel? updated = await _service.UpdateAsync(model);
+
+        if (updated == null)
         {
             return NotFound();
         }
 
-        _mapper.ToEntity(model, vehicle);
-
-        if (ImageFile != null)
-        {
-            vehicle.ImageUrl = await SaveImage(ImageFile);
-        }
-
-        _context.Vehicles.Update(vehicle);
-
-        await _context.SaveChangesAsync();
-
         return RedirectToAction("Details", "Vehicle", new { id = model.Id });
+    }
+
+    // POST: /Vehicle/Delete/id=id
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, int customerId)
+    {
+        await _service.DeleteAsync(id);
+
+        return RedirectToAction("Details", "Customer", new { id = customerId });
     }
 
     private async Task<string> SaveImage(IFormFile ImageFile)

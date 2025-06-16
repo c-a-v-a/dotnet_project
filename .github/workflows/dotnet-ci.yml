@@ -31,5 +31,5 @@ jobs:
         run: dotnet build AutoParts.Web/AutoParts.Web.csproj --no-restore
 
       - name: 🧪 Run tests
-        run: dotnet test AutoParts.Web.Tests/AutoParts.Web.Tests.csproj --no-build --verbosity normal
+        run: dotnet test AutoParts.Web.Tests/AutoParts.Web.Tests.csproj --verbosity normal
 

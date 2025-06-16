@@ -1,0 +1,49 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model AutoParts.Web.Models.MonthlyRepairSummaryViewModel
+
+<h2>Raport miesięczny napraw</h2>
+
+<form method="get" class="mb-3">
+    <label for="month">Wybierz miesiąc:</label>
+    <input type="month" name="month" value="@Model.SelectedMonth?.ToString("yyyy-MM")" />
+    <button type="submit" class="btn btn-primary ms-2">Generuj</button>
+</form>
+
+@if (Model.Items.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Klient</th>
+                <th>Pojazd</th>
+                <th>Liczba zleceń</th>
+                <th>Suma kosztów</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>@item.Vehicle</td>
+                    <td>@item.ServiceCount</td>
+                    <td><strong>@item.TotalCost zł</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a asp-action="MonthlySummaryPdf"
+       asp-route-month="@Model.SelectedMonth?.ToString("yyyy-MM")"
+       class="btn btn-outline-secondary" target="_blank">
+        Pobierz PDF
+    </a>
+}
+else
+{
+    <p class="text-muted">Brak danych dla wybranego miesiąca.</p>
+}

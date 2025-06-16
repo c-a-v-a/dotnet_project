@@ -1,0 +1,24 @@
+﻿@model List<AutoParts.Web.Models.OpenOrderItem>
+
+<h2>Raport – Otwarte naprawy</h2>
+<table border="1" cellpadding="5" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Pojazd</th>
+            <th>Opis</th>
+            <th>Data rozpoczęcia</th>
+            <th>Mechanik</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Vehicle</td>
+                <td>@item.Description</td>
+                <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Mechanic</td>
+            </tr>
+        }
+    </tbody>
+</table>

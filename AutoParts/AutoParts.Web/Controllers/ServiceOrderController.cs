@@ -146,4 +146,58 @@ public class ServiceOrderController : Controller
 
         return RedirectToAction("Index");
     }
+
+    public async Task<IActionResult> MonthlySummary(DateTime? month)
+    {
+        var model = await BuildMonthlySummaryModel(month);
+        return View(model);
+    }
+
+    public async Task<IActionResult> MonthlySummaryPdf(DateTime? month)
+    {
+        var model = await BuildMonthlySummaryModel(month);
+
+        return new Rotativa.AspNetCore.ViewAsPdf("MonthlySummaryPdf", model)
+        {
+            FileName = $"RaportNapraw_{month?.ToString("yyyy_MM") ?? "brak_daty"}.pdf",
+            PageSize = Rotativa.AspNetCore.Options.Size.A4,
+            PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
+        };
+    }
+
+    private async Task<MonthlyRepairSummaryViewModel> BuildMonthlySummaryModel(DateTime? month)
+    {
+        var start = month ?? DateTime.Today;
+        var firstDay = new DateTime(start.Year, start.Month, 1);
+        var lastDay = firstDay.AddMonths(1);
+
+        var orders = await _context.ServiceOrders
+            .Where(o => o.EndDate >= firstDay && o.EndDate < lastDay)
+            .Include(o => o.Vehicle)
+            .ThenInclude(v => v.Customer) 
+           
+            .Include(o => o.Tasks)
+                .ThenInclude(t => t.UsedParts)
+                    .ThenInclude(p => p.Part)
+            .ToListAsync();
+
+        var grouped = orders
+            .GroupBy(o => new { o.Vehicle.CustomerId, o.VehicleId })
+            .Select(g => new MonthlyRepairItem
+            {
+                CustomerName = $"{g.First().Vehicle.Customer.FirstName} {g.First().Vehicle.Customer.LastName}",
+                Vehicle = $"{g.First().Vehicle.Make} {g.First().Vehicle.ModelName} ({g.First().Vehicle.LicensePlate})",
+                ServiceCount = g.Count(),
+                TotalCost = g.Sum(o =>
+                    o.Tasks.Sum(t => t.LaborCost) +
+                    o.Tasks.SelectMany(t => t.UsedParts).Sum(p => p.TotalPrice))
+            }).ToList();
+
+        return new MonthlyRepairSummaryViewModel
+        {
+            SelectedMonth = month,
+            Items = grouped
+        };
+    }
+
 }

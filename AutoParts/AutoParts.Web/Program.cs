@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AutoParts.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,9 +72,18 @@ builder.Services.AddScoped<ServiceOrderService>();
 builder.Services.AddScoped<UsedPartService>();
 builder.Services.AddScoped<VehicleService>();
 
+builder.Services.AddHostedService<OpenOrderReportBackgroundService>();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+builder.Services.Configure<ReportEmailSettings>(
+    builder.Configuration.GetSection("ReportEmail"));
+
 var app = builder.Build();
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
+
+
+
 
 
 if (!app.Environment.IsDevelopment())

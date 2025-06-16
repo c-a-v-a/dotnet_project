@@ -1,0 +1,40 @@
+﻿@model AutoParts.Web.Models.MonthlyRepairSummaryViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        h2 { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Podsumowanie napraw za miesiąc: @Model.SelectedMonth?.ToString("MMMM yyyy")</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Klient</th>
+                <th>Pojazd</th>
+                <th>Liczba zleceń</th>
+                <th>Suma kosztów (zł)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>@item.Vehicle</td>
+                    <td>@item.ServiceCount</td>
+                    <td>@item.TotalCost</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

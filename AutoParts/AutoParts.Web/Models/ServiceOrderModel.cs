@@ -14,7 +14,7 @@ public class ServiceOrderModel
     [StringLength(1000, MinimumLength = 2, ErrorMessage = "Description must be between 2 and 1000 characters.")]
     public string Description { get; set; } = String.Empty;
 
-    public ICollection<ServiceTaskModel> Tasks { get; set; } = new List<ServiceTaskModel>();
+    public List<ServiceTaskModel> Tasks { get; set; } = new List<ServiceTaskModel>();
 
     [Required(ErrorMessage = "Order status is required.")]
     public OrderStatus Status { get; set; } = OrderStatus.New;
@@ -38,7 +38,7 @@ public class ServiceOrderModel
 
     public UserShortDto? Mechanic { get; set; }
 
-    public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
+    public List<CommentModel> Comments { get; set; } = new List<CommentModel>();
 
     [NotMapped]
     public decimal TotalCost => Tasks.Sum(task => task.TotalCost);

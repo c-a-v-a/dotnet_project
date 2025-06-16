@@ -21,6 +21,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://localhost:7252");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

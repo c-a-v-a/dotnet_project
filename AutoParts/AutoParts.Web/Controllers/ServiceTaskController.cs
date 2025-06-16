@@ -6,6 +6,7 @@ using AutoParts.Web.Data.Entities;
 using AutoParts.Web.Enums;
 using AutoParts.Web.Mappers;
 using AutoParts.Web.Models;
+using AutoParts.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,13 @@ using Microsoft.EntityFrameworkCore;
 public class ServiceTaskController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly ServiceTaskMapper _mapper;
+    private readonly ServiceTaskService _service;
     private readonly UserManager<User> _userManager;
 
-    public ServiceTaskController(ApplicationDbContext context, ServiceTaskMapper mapper, UserManager<User> userManager)
+    public ServiceTaskController(ApplicationDbContext context, ServiceTaskService service, UserManager<User> userManager)
     {
         _context = context;
-        _mapper = mapper;
+        _service = service;
         _userManager = userManager;
     }
 
@@ -56,8 +57,7 @@ public class ServiceTaskController : Controller
             return View(model);
         }
 
-        _context.ServiceTasks.Add(_mapper.ToEntity(model));
-        await _context.SaveChangesAsync();
+        await _service.CreateAsync(model);
 
         return RedirectToAction("Details", "ServiceOrder", new { id = model.ServiceOrderId });
     }
@@ -70,14 +70,12 @@ public class ServiceTaskController : Controller
             return Forbid();
         }
 
-        var serviceTask = await _context.ServiceTasks.FindAsync(serviceTaskId);
+        ServiceTaskModel? model = await _service.GetAsync(serviceTaskId);
 
-        if (serviceTask == null)
+        if (model == null)
         {
             return NotFound();
         }
-
-        var model = _mapper.ToViewModel(serviceTask);
 
         return View(model);
     }
@@ -96,18 +94,14 @@ public class ServiceTaskController : Controller
             return View(model);
         }
 
-        var serviceTask = _context.ServiceTasks.Find(model.Id);
+        ServiceTaskModel? updated = await _service.UpdateAsync(model);
 
-        if (serviceTask == null)
+        if (updated == null)
         {
             return NotFound();
         }
 
-        _mapper.ToEntity(model, serviceTask);
-        _context.ServiceTasks.Update(serviceTask);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("Details", "ServiceOrder", new { id = model.ServiceOrderId });
+        return RedirectToAction("Details", "ServiceOrder", new { id = updated.ServiceOrderId });
     }
 
     [HttpPost]
@@ -119,15 +113,7 @@ public class ServiceTaskController : Controller
             return Forbid();
         }
 
-        var serviceTask = await _context.ServiceTasks.FindAsync(id);
-
-        if (serviceTask == null)
-        {
-            return NotFound();
-        }
-
-        _context.ServiceTasks.Remove(serviceTask);
-        await _context.SaveChangesAsync();
+        await _service.DeleteAsync(id);
 
         return RedirectToAction("Details", "ServiceOrder", new { id = serviceOrderId });
     }

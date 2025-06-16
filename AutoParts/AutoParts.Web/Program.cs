@@ -65,6 +65,7 @@ builder.Services.AddSingleton(new VehicleMapper());
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<PartService>();
+builder.Services.AddScoped<ServiceTaskService>();
 builder.Services.AddScoped<UsedPartService>();
 builder.Services.AddScoped<VehicleService>();
 

@@ -27,10 +27,10 @@ namespace AutoParts.Web.Services
             {
                 try
                 {
-                    Console.WriteLine("⏳ Czekam 15 sekund...");
+                    Console.WriteLine("Czekam 15 sekund...");
                     await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
 
-                    Console.WriteLine("📄 Pobieram PDF...");
+                    Console.WriteLine("Pobieram PDF...");
 
                     // 🔐 Ustawienie handlera ignorującego certyfikat (TYLKO DO TESTÓW!)
                     var handler = new HttpClientHandler
@@ -42,7 +42,7 @@ namespace AutoParts.Web.Services
                     using var client = new HttpClient(handler);
                     var pdfBytes = await client.GetByteArrayAsync("http://localhost:7252/Reports/OpenOrdersPdf");
 
-                    Console.WriteLine("📬 Tworzę i wysyłam e-mail...");
+                    Console.WriteLine("Tworzę i wysyłam e-mail...");
 
                     var message = new MimeMessage();
                     message.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
@@ -62,11 +62,11 @@ namespace AutoParts.Web.Services
                     await smtp.SendAsync(message);
                     await smtp.DisconnectAsync(true);
 
-                    Console.WriteLine($"✅ E-mail wysłany o {DateTime.Now}");
+                    Console.WriteLine($"E-mail wysłany o {DateTime.Now}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("❌ Błąd:");
+                    Console.WriteLine("Błąd:");
                     Console.WriteLine(ex.ToString());
                 }
             }

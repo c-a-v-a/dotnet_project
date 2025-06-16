@@ -35,11 +35,12 @@ namespace AutoParts.Web.Services
                     // 🔐 Ustawienie handlera ignorującego certyfikat (TYLKO DO TESTÓW!)
                     var handler = new HttpClientHandler
                     {
+                        //ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                         ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
                     };
 
                     using var client = new HttpClient(handler);
-                    var pdfBytes = await client.GetByteArrayAsync("https://localhost:7252/Reports/OpenOrdersPdf");
+                    var pdfBytes = await client.GetByteArrayAsync("http://localhost:7252/Reports/OpenOrdersPdf");
 
                     Console.WriteLine("📬 Tworzę i wysyłam e-mail...");
 

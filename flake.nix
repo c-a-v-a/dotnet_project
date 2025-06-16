@@ -21,6 +21,7 @@
               zip
               postman
               tree
+	      wkhtmltopdf
             ];
           };
         }

@@ -174,8 +174,8 @@ public class ServiceOrderController : Controller
         var orders = await _context.ServiceOrders
             .Where(o => o.EndDate >= firstDay && o.EndDate < lastDay)
             .Include(o => o.Vehicle)
-            .ThenInclude(v => v.Customer) 
-           
+            .ThenInclude(v => v.Customer)
+
             .Include(o => o.Tasks)
                 .ThenInclude(t => t.UsedParts)
                     .ThenInclude(p => p.Part)

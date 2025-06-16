@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoParts.Web.Data;
+using AutoParts.Web.Enums;
+using AutoParts.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
-using AutoParts.Web.Models;
-using AutoParts.Web.Data;
-using AutoParts.Web.Enums;
 
 namespace AutoParts.Web.Controllers
 {
